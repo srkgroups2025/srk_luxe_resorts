@@ -1,6 +1,6 @@
 import express from "express";
 import { sendMobileOtp, verifyMobileOtp } from "../controllers/auth/mobile-otp.js";
-import { signup } from "../controllers/auth/signUp.js";
+import { signup } from "../controllers/auth/signup.js";
 import { verifyEmail } from "../controllers/auth/verifyEmail.js";
 import { login } from "../controllers/auth/login.js";
 import { forgotPassword } from "../controllers/auth/forgotPassword.js";
