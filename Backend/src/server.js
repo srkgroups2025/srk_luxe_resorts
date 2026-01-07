@@ -24,7 +24,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
   "https://srk-luxe-resorts.vercel.app",
-  "https://www.srkluxeresortsudumalpet.com/",
+  "https://www.srkluxeresortsudumalpet.com",
 ];
 
 app.use(
