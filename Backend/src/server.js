@@ -25,6 +25,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://srk-luxe-resorts.vercel.app",
   "https://www.srkluxeresortsudumalpet.com",
+  "https://srkluxeresortsudumalpet.com"
 ];
 
 app.use(
