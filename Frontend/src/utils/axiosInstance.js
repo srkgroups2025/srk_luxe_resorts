@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://srk-luxe-resorts.onrender.com",
+  baseURL: "https://api.srkluxeresortsudumalpet.com",
   withCredentials: true,
 });
 
