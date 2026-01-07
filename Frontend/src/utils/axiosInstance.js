@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "https://srk-luxe-resorts.onrender.com",
   withCredentials: true,
 });
 
