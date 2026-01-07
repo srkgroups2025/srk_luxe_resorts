@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+/* 🔑 DEFINE VARIABLES */
+:root {
+  /* 🎨 Colors */
+  --color-primaryLite: #C6A15B;
+  --color-secondaryLite: #E2C889;
+  --color-teritaryLite: #0E1B1A;
+
+  --color-bgColor: #F5F3EE;
+  --color-cards: #dfdad2;
+  --color-buttons: #ca5c30;
+
+  --color-dark: #0B0B0B;
+  --color-red: #f33210;
+  --color-white: #FFFFFF;
+  --color-grayLite: #E5E7EB;
+  --color-grayDark: #6B7280;
+  --color-green: #20ad04;
+
+  /* ✨ Fonts */
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* 🔑 REGISTER THEM WITH TAILWIND */
+@theme {
+  --color-primaryLite: var(--color-primaryLite);
+  --color-secondaryLite: var(--color-secondaryLite);
+  --color-teritaryLite: var(--color-teritaryLite);
+
+  --color-bgColor: var(--color-bgColor);
+  --color-cards: var(--color-cards);
+  --color-buttons: var(--color-buttons);
+
+  --color-dark: var(--color-dark);
+  --color-red: var(--color-red);
+  --color-white: var(--color-white);
+  --color-grayLite: var(--color-grayLite);
+  --color-grayDark: var(--color-grayDark);
+  --color-green: var(--color-green);
+
+  /* Fonts */
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+}
+
+html,
+body {
+  scroll-behavior: smooth;
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+}
+
+@keyframes loader {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.animate-loader {
+  animation: loader 1.4s infinite ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Hide scrollbars for horizontally-scrolling containers */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  overscroll-behavior-x: contain;
+}
+.no-scrollbar::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important; /* Chrome, Safari, Opera */
+}
+.no-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent !important;
+}
+.no-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+/* Re-enable native scrollbars on md+ so grid layout shows normal scrollbars */
+@media (min-width: 768px) {
+  .no-scrollbar {
+    -ms-overflow-style: auto;
+    scrollbar-width: auto;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: initial;
+    width: initial;
+    height: initial;
+  }
+}
+
