@@ -41,6 +41,57 @@ export const ApiRoutes = {
     }),
   },
 
+  amenities: {
+    createAmenities: { path: "/api/amenities/create", method: "POST" },
+    getAllAmenities: { path: "/api/amenities/", method: "GET" },
+    getAmenitiesById: (amenitiesId) => ({
+      path: `/api/amenities/${amenitiesId}`,
+      method: "GET",
+    }),
+    updateAmenities: (amenitiesId) => ({
+      path: `/api/amenities/update/${amenitiesId}`,
+      method: "PUT",
+    }),
+    deleteAmenities: (amenitiesId) => ({
+      path: `/api/amenities/delete/${amenitiesId}`,
+      method: "DELETE",
+    }),
+  },
+
+  nearbyPlaces: {
+    createNearbyPlaces: { path: "/api/nearby-places/create", method: "POST" },
+    getAllNearbyPlaces: { path: "/api/nearby-places/", method: "GET" },
+    getNearbyPlacesById: (nearbyPlacesId) => ({
+      path: `/api/nearby-places/${nearbyPlacesId}`,
+      method: "GET",
+    }),
+    updateNearbyPlaces: (nearbyPlacesId) => ({
+      path: `/api/nearby-places/update/${nearbyPlacesId}`,
+      method: "PUT",
+    }),
+    deleteNearbyPlaces: (nearbyPlacesId) => ({
+      path: `/api/nearby-places/delete/${nearbyPlacesId}`,
+      method: "DELETE",
+    }),
+  },
+
+  event: {
+    createEvent: { path: "/api/events/create", method: "POST" },
+    getAllEvents: { path: "/api/events/", method: "GET" },
+    getEventById: (eventId) => ({
+      path: `/api/events/${eventId}`,
+      method: "GET",
+    }),
+    updateEvent: (eventId) => ({
+      path: `/api/events/update/${eventId}`,
+      method: "PUT",
+    }),
+    deleteEvent: (eventId) => ({
+      path: `/api/events/delete/${eventId}`,
+      method: "DELETE",
+    }),
+  },
+
   booking: {
     /* CUSTOMER */
     createPendingBooking: { path: "/api/bookings/book/pending", method: "POST" },

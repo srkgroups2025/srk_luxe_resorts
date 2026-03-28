@@ -105,7 +105,7 @@ export default function AdminPanel() {
 
             {/* Rooms & Booking */}
             <div className="grid sm:grid-cols-2 gap-6 mb-10">
-                <Link href="/admin-panel/rooms">
+                <Link href="/admin-panel/settings">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -113,9 +113,9 @@ export default function AdminPanel() {
                         whileHover={{ y: -5, boxShadow: "0 12px 24px rgba(0,0,0,0.1)" }}
                         className="bg-cards p-6 rounded-xl shadow cursor-pointer"
                     >
-                        <Icon icon="mdi:bed-king-outline" className="w-10 h-10 mb-3 text-primaryLite" />
-                        <h3 className="font-semibold text-lg">Manage Rooms</h3>
-                        <p className="text-sm text-grayDark">Add, edit or remove rooms</p>
+                        <Icon icon="mdi:cog-outline" className="w-10 h-10 mb-3 text-primaryLite" />
+                        <h3 className="font-semibold text-lg">Settings</h3>
+                        <p className="text-sm text-grayDark">Add, edit or remove</p>
                     </motion.div>
                 </Link>
 

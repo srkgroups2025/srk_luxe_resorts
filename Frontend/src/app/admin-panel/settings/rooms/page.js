@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
-import useRoom from "../../../hooks/useRoom";
+import useRoom from "../../../../hooks/useRoom";
 import AutoImageSlider from "@/components/AutoImageSlider";
 
 
@@ -12,7 +12,7 @@ const RoomCardSkeleton = () => (
     <motion.div
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="bg-cards rounded-xl shadow overflow-hidden"
+        className="w-[280px] flex-shrink-0 overflow-hidden rounded-xl bg-cards shadow sm:w-[320px]"
     >
         <div className="h-40 w-full bg-gray-200" />
         <div className="p-4 space-y-3">
@@ -28,7 +28,7 @@ const RoomCardSkeleton = () => (
     </motion.div>
 );
 
-export default function ManageRooms() {
+export default function ManageRooms({ embedded = false } = {}) {
     const { createRoom, getAllRooms, updateRoom, deleteRoom } = useRoom();
     const [removedImages, setRemovedImages] = useState([]);
     const [existingImages, setExistingImages] = useState([]);
@@ -186,16 +186,20 @@ export default function ManageRooms() {
     /* ---------------- UI ---------------- */
 
     return (
-        <div className="min-h-screen pt-14 px-4 sm:px-8 bg-bgColor">
+        <div className={embedded ? "w-full" : "min-h-screen bg-bgColor px-4 pt-14 sm:px-8"}>
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="flex justify-between items-center mb-6"
+                className={
+                    embedded
+                        ? "mb-4 flex items-center justify-end"
+                        : "mb-6 flex items-center justify-between"
+                }
             >
-                <h1 className="text-2xl font-bold text-primaryLite">
-                    Manage Rooms
-                </h1>
+                {!embedded && (
+                    <h1 className="text-2xl font-bold text-primaryLite">Manage Rooms</h1>
+                )}
                 <motion.button
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -214,7 +218,7 @@ export default function ManageRooms() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                className={`flex gap-6 overflow-x-auto pb-3 scroll-smooth no-scrollbar overscroll-x-contain ${embedded ? "-mx-4 px-4 sm:-mx-6 sm:px-6" : ""}`}
             >
                 <AnimatePresence mode="wait">
                     {getAllRooms.isLoading ? (
@@ -229,7 +233,7 @@ export default function ManageRooms() {
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="col-span-full text-center py-12"
+                            className="min-w-full py-12 text-center"
                         >
                             <Icon icon="mdi:home-outline" width="48" height="48" className="mx-auto mb-4 text-gray-400" />
                             <p className="text-center text-gray-500">
@@ -245,7 +249,7 @@ export default function ManageRooms() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
                                 whileHover={{ y: -8, boxShadow: "0 12px 24px rgba(0,0,0,0.15)" }}
-                                className="bg-cards rounded-xl shadow overflow-hidden"
+                                className="w-[280px] flex-shrink-0 overflow-hidden rounded-xl bg-cards shadow sm:w-[320px]"
                             >
                                 <motion.div
                                     className="overflow-hidden"

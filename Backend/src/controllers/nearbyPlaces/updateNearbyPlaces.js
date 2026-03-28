@@ -1,38 +1,23 @@
-import Room from "../../models/Room.js";
+import NearbyPlaces from "../../models/NearbyPlaces.js";
 import cloudinary from "../../config/cloudinary.js";
 
-export const updateRoom = async (req, res) => {
+export const updateNearbyPlaces = async (req, res) => {
   try {
     const {
       name,
-      price,
-      gst,
-      maxGuest,
-      amenities,
-      description,
-      bookedDates,
       isActive,
       removedImages
     } = req.body;
 
-    const room = await Room.findById(req.params.id);
-    if (!room) {
-      return res.status(404).json({ message: "Room not found" });
+    const nearbyPlaces = await NearbyPlaces.findById(req.params.id);
+    if (!nearbyPlaces) {
+      return res.status(404).json({ message: "NearbyPlaces not found" });
     }
 
     /* ---------- UPDATE BASIC FIELDS ---------- */
-    if (name !== undefined) room.name = name;
-    if (price !== undefined) room.price = price;
-    if (gst !== undefined) room.gst = gst;
-    if (maxGuest !== undefined) room.maxGuest = maxGuest;
-    if (description !== undefined) room.description = description;
-    if (bookedDates !== undefined) room.bookedDates = bookedDates;
+    if (name !== undefined) nearbyPlaces.name = name;
     if (typeof isActive === "string") {
-      room.isActive = isActive === "true";
-    }
-
-    if (amenities) {
-      room.amenities = JSON.parse(amenities);
+      nearbyPlaces.isActive = isActive === "true";
     }
 
     /* ---------- REMOVE OLD IMAGES ---------- */
@@ -49,7 +34,7 @@ export const updateRoom = async (req, res) => {
         await cloudinary.uploader.destroy(publicId);
       }
 
-      room.images = room.images.filter(
+      nearbyPlaces.images = nearbyPlaces.images.filter(
         (img) => !imagesToRemove.includes(img)
       );
     }
@@ -58,21 +43,21 @@ export const updateRoom = async (req, res) => {
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const result = await cloudinary.uploader.upload(file.path, {
-          folder: "rooms",
+          folder: "NearbyPlaces",
         });
 
-        room.images.push(result.secure_url);
+        nearbyPlaces.images.push(result.secure_url);
       }
     }
 
-    await room.save();
+    await nearbyPlaces.save();
 
     res.status(200).json({
-        message: "Room updated successfully",
-        data: room,
+        message: "NearbyPlaces updated successfully",
+        data: nearbyPlaces,
     });
   } catch (error) {
-    console.error("Error updating room:", error);
+    console.error("Error updating nearbyPlaces:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
