@@ -33,7 +33,7 @@ const useRoom = () => {
       });
       return res.data;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount: true,
   });
 
   const updateRoom = useMutation({

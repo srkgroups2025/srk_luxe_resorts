@@ -55,9 +55,9 @@ export default function LoginModal({ close }) {
       setLoading(true);
 
       if (mode === "signup") {
-        if (!mobileNumberVerified) {
-          return toast.warning("Mobile number not verified");
-        }
+        // if (!mobileNumberVerified) {
+        //   return toast.warning("Mobile number not verified");
+        // }
 
         if (form.password !== form.confirmPassword) {
           return toast.error("Passwords do not match");
@@ -68,7 +68,7 @@ export default function LoginModal({ close }) {
           email: form.email,
           mobileNumber: form.mobileNumber,
           password: form.password,
-          isMobileNumberVerified: mobileNumberVerified,
+          isMobileNumberVerified: true,
         });
 
         toast.success("Signup successful", {
@@ -239,7 +239,7 @@ export default function LoginModal({ close }) {
                 <motion.button
                   type="button"
                   onClick={handleMobileVerify}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold text-white bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 px-3 py-1.5 rounded-lg shadow-md"
+                  className="absolute right-2 top-1/2 cursor-pointer -translate-y-1/2 text-xs font-bold text-white bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 px-3 py-1.5 rounded-lg shadow-md"
                   whileHover={{ scale: 1.08, boxShadow: "0 8px 16px rgba(99,102,241,0.3)" }}
                   whileTap={{ scale: 0.92 }}
                   transition={{ type: "spring", stiffness: 200 }}
@@ -364,7 +364,7 @@ export default function LoginModal({ close }) {
           >
             <motion.button
               onClick={() => setMode("reset")}
-              className="text-sm font-semibold bg-gradient-to-r from-slate-100 to-slate-50 text-indigo-600 hover:text-indigo-700 hover:from-slate-200 hover:to-slate-100 px-4 py-2 rounded-lg transition-all duration-300 shadow-sm"
+              className="text-sm font-semibold cursor-pointer bg-gradient-to-r from-slate-100 to-slate-50 text-indigo-600 hover:text-indigo-700 hover:from-slate-200 hover:to-slate-100 px-4 py-2 rounded-lg transition-all duration-300 shadow-sm"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -376,7 +376,7 @@ export default function LoginModal({ close }) {
         <motion.button
           disabled={loading}
           onClick={handleSubmit}
-          className={`w-full font-bold py-3.5 rounded-xl mb-6 transition-all duration-300 shadow-lg text-white text-lg ${
+          className={`w-full font-bold py-3.5  cursor-pointer rounded-xl mb-6 transition-all duration-300 shadow-lg text-white text-lg ${
             loading 
               ? "bg-gray-400 cursor-not-allowed" 
               : "bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 shadow-xl"
@@ -412,7 +412,7 @@ export default function LoginModal({ close }) {
               {mode === "login" ? "Don't have an account? " : "Already have an account? "}
               <motion.button
                 onClick={() => setMode(mode === "login" ? "signup" : "login")}
-                className="font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
+                className="font-bold bg-gradient-to-r  cursor-pointer from-indigo-600 to-purple-600 bg-clip-text text-transparent hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -425,7 +425,7 @@ export default function LoginModal({ close }) {
         {mode === "reset" && (
           <motion.button
             onClick={() => setMode("login")}
-            className="w-full text-center text-sm font-semibold text-indigo-600 hover:text-indigo-700 py-3 mt-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg transition-all duration-300 hover:from-indigo-100 hover:to-purple-100"
+            className="w-full text-center cursor-pointer text-sm font-semibold text-indigo-600 hover:text-indigo-700 py-3 mt-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg transition-all duration-300 hover:from-indigo-100 hover:to-purple-100"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}

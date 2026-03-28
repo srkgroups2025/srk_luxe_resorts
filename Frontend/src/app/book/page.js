@@ -35,7 +35,6 @@ export default function BookPage() {
   const selectedDates = bookingData.checkIn
     ? getDatesBetween(bookingData.checkIn, bookingData.checkOut)
     : [];
-  console.log('bookingData', bookingData)
   console.log('selectedDates', selectedDates)
 
   const formatDayWithMonth = (dateStr) => {
@@ -72,6 +71,8 @@ export default function BookPage() {
               ...(room.bookedDates || []),
               ...(room.holdDates || []),
             ];
+              console.log('booked', booked)
+
             const availableDates = selectedDates.filter(
               (date) => !booked.includes(date)
             );
@@ -81,7 +82,9 @@ export default function BookPage() {
               selectedDates.length > 0;
 
             const noneAvailable = availableDates.length === 0;
-
+  console.log('availableDates', availableDates)
+  console.log('allAvailable', allAvailable)
+  console.log('noneAvailable', noneAvailable)
             return (
               <motion.div
                 key={room.id}
@@ -89,7 +92,7 @@ export default function BookPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
                 whileHover={{ y: -8, boxShadow: "0 12px 24px rgba(0,0,0,0.15)" }}
-                className="border bg-white rounded-2xl shadow overflow-hidden cursor-pointer"
+                className="border bg-white rounded-2xl shadow overflow-hidden"
               >
                 <motion.div
                   className="overflow-hidden"
@@ -147,7 +150,7 @@ export default function BookPage() {
                     whileTap={!noneAvailable ? { scale: 0.98 } : {}}
                     className={`w-full py-2 rounded-xl text-white flex items-center justify-center gap-2 ${noneAvailable
                       ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-primaryLite hover:opacity-90"
+                      : " cursor-pointer bg-primaryLite hover:opacity-90"
                       }`}
                   >
                     <Icon icon="mdi:eye" width="18" height="18" />

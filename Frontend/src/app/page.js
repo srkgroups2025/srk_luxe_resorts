@@ -11,6 +11,7 @@ import CheckAvailablity from "@/components/CheckAvailablity";
 import Details from "@/components/Details";
 import WhatsappButton from "@/components/WhatsappButton";
 import Loader from "@/components/Loader";
+import Reviews from "@/components/Reviews";
 
 export default function Home() {
   const router = useRouter();
@@ -68,6 +69,11 @@ export default function Home() {
       {/* Events Section */}
       <section className="px-4 sm:px-6 md:px-12 lg:px-20">
         <Event />
+      </section>
+
+      {/* Reviews Section */}
+      <section className="px-4 sm:px-6 md:px-12 lg:px-20">
+        <Reviews />
       </section>
 
       {/* Footer */}

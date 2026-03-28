@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
 import useRoom from "../../../hooks/useRoom";
+import AutoImageSlider from "@/components/AutoImageSlider";
+
 
 // Skeleton Loader Component
 const RoomCardSkeleton = () => (
@@ -201,7 +203,7 @@ export default function ManageRooms() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleAdd}
-                    className="bg-buttons text-white px-5 py-2 rounded-xl"
+                    className="bg-buttons cursor-pointer text-white px-5 py-2 rounded-xl"
                 >
                     + Add Room
                 </motion.button>
@@ -249,10 +251,10 @@ export default function ManageRooms() {
                                     className="overflow-hidden"
                                     whileHover={{ scale: 1.05 }}
                                 >
-                                    <img
-                                        src={room.images?.[0]}
+                                    <AutoImageSlider
+                                        images={room.images}
                                         alt={room.name}
-                                        className="h-40 w-full object-cover"
+                                        className="h-56 w-full object-cover"
                                     />
                                 </motion.div>
 
@@ -263,6 +265,12 @@ export default function ManageRooms() {
                                     </p>
                                     <p className="text-xs mt-1 text-grayDark">
                                         Max Guests: {room.maxGuest}
+                                    </p>
+                                    <p className="text-xs mt-1 text-grayDark">
+                                        Current Bookings: {room.bookedDates.length}
+                                    </p>
+                                    <p className="text-xs mt-1 text-grayDark">
+                                        Current Holdings: {room.holdDates.length}
                                     </p>
 
                                     <div className="flex flex-wrap gap-2 mt-2">

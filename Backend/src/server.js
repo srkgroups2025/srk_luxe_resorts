@@ -10,6 +10,7 @@ import roomRoutes from "./routes/room.routes.js";
 import bookingRoutes from "./routes/booking.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 
 import "./jobs/index.js";
 
@@ -56,6 +57,7 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 /* ❤️ Health check (optional but recommended) */
 app.get("/", (req, res) => {

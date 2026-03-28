@@ -1,7 +1,8 @@
 import axios from "axios";
+import { BASE_URL } from "./ApiRoutes";
 
 const axiosInstance = axios.create({
-  baseURL: "https://api.srkluxeresortsudumalpet.com",
+  baseURL: BASE_URL ,
   withCredentials: true,
 });
 

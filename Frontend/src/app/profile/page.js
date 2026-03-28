@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProfile } from "@/hooks/useUser";
 import { useUserBookings } from "@/hooks/useBook";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { QRCodeCanvas } from "qrcode.react";
 
 // Skeleton Loader Components
 const ProfileSkeleton = () => (
@@ -45,6 +47,7 @@ const BookingSkeleton = () => (
 );
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { user, updateUser } = useProfile();
   const { getUserBookings, cancelRequestBooking } = useUserBookings();
   const {
@@ -59,6 +62,7 @@ export default function ProfilePage() {
     mobileNumber: "",
   });
 
+  // cancel booking
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [cancelReason, setCancelReason] = useState("");
@@ -90,6 +94,33 @@ export default function ProfilePage() {
         }
       }
     );
+  };
+
+  // Review QR download
+  const [reviewUrl, setReviewUrl] = useState("");
+
+  useEffect(() => {
+    if (user && typeof window !== "undefined") {
+      setReviewUrl(
+        `${window.location.origin}/reviews`
+      );
+    }
+  }, [user]);
+
+  const downloadQR = () => {
+    const canvas = document.getElementById("review-qr");
+    if (!canvas) return;
+
+    const pngUrl = canvas
+      .toDataURL("image/png")
+      .replace("image/png", "image/octet-stream");
+
+    const link = document.createElement("a");
+    link.href = pngUrl;
+    link.download = "review-qr.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Sync form when user loads/changes
@@ -208,6 +239,43 @@ export default function ProfilePage() {
             {/* <button onClick={() => setEditing(true)} className="max-w-[300px] flex-1 bg-buttons text-white py-2 rounded-xl hover:opacity-90 transition">
               Edit Profile
             </button> */}
+
+            {/* review button */}
+            <div className="mt-10 flex flex-col justify-center items-center sm:flex-row gap-4">
+              <button
+                onClick={() => router.push("/reviews?email=" + user.email)}
+                className="max-w-[200px] flex-1 bg-buttons text-white py-2 px-4 rounded-xl hover:opacity-90 transition"
+              >
+                Review
+              </button>
+            </div>
+
+            {/* review QR button */}
+            {user.role === "admin" && (
+              <div className="mt-10 flex flex-col items-center gap-4">
+
+                {/* Hidden QR */}
+                <div className="hidden">
+                  {reviewUrl && (
+                    <QRCodeCanvas
+                      id="review-qr"
+                      value={reviewUrl}
+                      size={300}
+                      level="H"
+                      includeMargin
+                    />
+                  )}
+                </div>
+
+                {/* Download Button */}
+                <button
+                  onClick={downloadQR}
+                  className="max-w-[200px] bg-buttons text-white py-2 px-4 rounded-xl hover:opacity-90 transition"
+                >
+                  Download Review QR
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

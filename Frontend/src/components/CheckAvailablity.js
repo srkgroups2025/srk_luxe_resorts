@@ -101,7 +101,7 @@ export default function CheckAvailability() {
             onChange={(e) => setAdults(Number(e.target.value))}
             className="border rounded-xl px-3 py-2 w-full"
           >
-            {[1, 2, 3, 4, 5].map((n) => (
+            {[1, 2, 3, 4, 5, 6].map((n) => (
               <option key={n} value={n}>{n}</option>
             ))}
           </select>
@@ -115,7 +115,7 @@ export default function CheckAvailability() {
             onChange={(e) => setChildren(Number(e.target.value))}
             className="border rounded-xl px-3 py-2 w-full"
           >
-            {[0, 1, 2, 3].map((n) => (
+            {[0, 1, 2, 3, 4].map((n) => (
               <option key={n} value={n}>{n}</option>
             ))}
           </select>
@@ -124,7 +124,7 @@ export default function CheckAvailability() {
         {/* CTA */}
         <button
           onClick={handleCheck}
-          className="bg-primaryLite text-white px-6 py-3 rounded-xl hover:opacity-90"
+          className="bg-primaryLite cursor-pointer text-white px-6 py-3 rounded-xl hover:opacity-90"
         >
           Check
         </button>

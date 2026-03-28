@@ -171,18 +171,35 @@ export const sendReviewMail = async (booking) => {
     },
   });
 
+  const reviewUrl = `${process.env.FRONTEND_URL}/review?email=${encodeURIComponent(
+    booking.guest.email
+  )}`;
+
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: booking.guest.email,
     subject: "How was your stay at SRK Luxe Resorts?",
     html: `
-      <h2>Thank you for staying with us</h2>
-      <p>Dear ${booking.guest.name},</p>
-      <p>We hope you enjoyed your stay.</p>
-      <p>Please take a moment to leave us a review.</p>
-      <a href="https://your-frontend/review/${booking.bookingId}">
-        Leave a Review
-      </a>
+      <div style="font-family: Arial; background:#000; color:#fff; padding:20px">
+        <div style="max-width:600px;margin:auto;background:#111;padding:20px;border-radius:8px">
+          <h2 style="color:#0073e6;text-align:center">We’d love your feedback</h2>
+          <p>Dear ${booking.guest.name},</p>
+          <p>Thank you for staying at <strong>SRK Luxe Resorts</strong>.</p>
+          <p>Please take a moment to share your experience.</p>
+
+          <p style="text-align:center">
+            <a href="${reviewUrl}"
+               style="padding:12px 25px;background:#0073e6;color:#fff;
+               text-decoration:none;border-radius:5px">
+              Leave a Review
+            </a>
+          </p>
+
+          <p style="font-size:12px;color:#999;text-align:center">
+            © 2025 SRK Luxe Resorts
+          </p>
+        </div>
+      </div>
     `,
   };
 

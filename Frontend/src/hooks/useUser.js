@@ -23,10 +23,11 @@ export function useVerifyMobileNumber() {
   return { sendMobileOtp, verifyOtp };
 }
 
-// Auth related hooks
+// user Auth
 export function useAuth() {
   const queryClient = useQueryClient();
 
+  /* ---------------- SIGNUP ---------------- */
   const signup = useMutation({
     mutationFn: async (payload) => {
       const res = await axiosInstance({
@@ -38,6 +39,7 @@ export function useAuth() {
     },
   });
 
+  /* ---------------- LOGIN ---------------- */
   const login = useMutation({
     mutationFn: async (payload) => {
       const res = await axiosInstance({
@@ -48,7 +50,20 @@ export function useAuth() {
       return res.data;
     },
     onSuccess: (data) => {
-      localStorage.setItem("userInfo", JSON.stringify(data.user));
+      const userInfo = {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        mobileNumber: data.user.mobileNumber,
+        role: data.user.role,
+      };
+
+      localStorage.setItem("userInfo", JSON.stringify(userInfo));
+
+      document.cookie = `userInfo=${encodeURIComponent(
+        JSON.stringify(userInfo)
+      )}; path=/`;
+
       emitAuthChange();
     },
   });
@@ -81,6 +96,7 @@ export function useAuth() {
     },
   });
 
+  /* ---------------- LOGOUT ---------------- */
   const logout = useMutation({
     mutationFn: async () => {
       const token = localStorage.getItem("accessToken");
@@ -92,6 +108,10 @@ export function useAuth() {
     },
     onSuccess: () => {
       localStorage.removeItem("userInfo");
+
+      // remove cookie
+      document.cookie = "userInfo=; path=/; max-age=0";
+
       queryClient.removeQueries(["userProfile"]);
       emitAuthChange();
     },
@@ -100,7 +120,7 @@ export function useAuth() {
   return { signup, login, forgotPassword, resetPassword, logout };
 }
 
-// User profile hook
+// User profile
 export function useProfile() {
   const queryClient = useQueryClient();
 

@@ -1,7 +1,7 @@
 import express from "express";
 import { adminOnly, customerOnly } from "../middlewares/authMiddleware.js";
 import { protect } from "../middlewares/authMiddleware.js";
-import { createBooking } from "../controllers/booking/createBooking.js";
+import { createPendingBooking, confirmBooking, cancelPendingBooking } from "../controllers/booking/createBooking.js";
 import { holdDates } from "../controllers/booking/holdDates.js";
 import { getUserBookings } from "../controllers/booking/getUserBookings.js";
 import { requestCancelBooking } from "../controllers/booking/requestCancelBooking.js";
@@ -15,7 +15,9 @@ const router = express.Router();
 
 /* ---------------- CUSTOMER ---------------- */
 
-router.post("/book", protect, customerOnly, createBooking);
+router.post("/book/pending", protect, customerOnly, createPendingBooking);
+router.patch("/book/confirm", protect, customerOnly, confirmBooking);
+router.delete("/book/cancel", protect, customerOnly, cancelPendingBooking);
 router.get("/user", protect, customerOnly, getUserBookings);
 router.patch("/book/:bookingId/cancel", protect, customerOnly, requestCancelBooking);
 
@@ -27,6 +29,6 @@ router.get("/all", protect, adminOnly, getAllBookingsAndHoldings);
 router.get("/expired", protect, adminOnly, getExpiredBookingsAndHoldings);
 
 router.patch("/book/:bookingId/approve-cancel", protect, adminOnly, approveCancelBooking);
-router.patch( "/book/:bookingId/reject-cancel", protect, adminOnly, rejectCancelBooking);
+router.patch("/book/:bookingId/reject-cancel", protect, adminOnly, rejectCancelBooking);
 
 export default router;

@@ -25,17 +25,24 @@ export const holdDates = async (req, res) => {
       throw new Error("Dates already blocked");
     }
 
+    // ✅ BLOCK DATES
     room.holdDates.push(...selectedDates);
     await room.save({ session });
 
-    const booking = await Booking.create([{
-      bookingId: generateHoldingId(),
-      roomId,
-      guests,
-      checkIn,
-      checkOut,
-      status: "HOLD",
-    }], { session });
+    // ✅ FIX: await the ID
+    const holdingId = await generateHoldingId();
+
+    const booking = await Booking.create(
+      [{
+        bookingId: holdingId, // ✅ STRING now
+        roomId,
+        guests,
+        checkIn,
+        checkOut,
+        status: "HOLD",
+      }],
+      { session }
+    );
 
     await session.commitTransaction();
 
@@ -53,4 +60,5 @@ export const holdDates = async (req, res) => {
     session.endSession();
   }
 };
+
 

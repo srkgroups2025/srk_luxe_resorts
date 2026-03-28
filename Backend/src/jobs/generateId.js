@@ -1,6 +1,6 @@
 import Counter from "../models/Counter.js";
 
-// Generic counter function
+// Generic counter
 const getNextSequence = async (name) => {
   const counter = await Counter.findOneAndUpdate(
     { name },
@@ -14,13 +14,11 @@ const getNextSequence = async (name) => {
 // BOOKING ID → BO000001
 export const generateBookingId = async () => {
   const seq = await getNextSequence("booking");
-
   return `BO${String(seq).padStart(6, "0")}`;
 };
 
 // HOLDING ID → HO000001
 export const generateHoldingId = async () => {
   const seq = await getNextSequence("holding");
-
   return `HO${String(seq).padStart(6, "0")}`;
 };

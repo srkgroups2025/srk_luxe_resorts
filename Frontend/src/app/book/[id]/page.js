@@ -40,7 +40,7 @@ export default function RoomDetailsPage() {
 
   // API calls
   const { createOrder, isCreatingOrder, verifyPayment, isVerifying } = usePayment();
-  const { holdBooking, isHolding, createBooking, isLoading } = useCreateAndHoldBooking();
+  const { holdBooking, isHolding, createPendingBooking, confirmBooking, cancelPendingBooking, isCreateLoading, isConfirmLoading, isCancelLoading } = useCreateAndHoldBooking();
   const { getAllRooms } = useRoom();
   const { bookingData, setBookingData } = useBooking();
 
@@ -142,7 +142,7 @@ export default function RoomDetailsPage() {
     availableDates.length !== selectedDates.length;
 
   const isBookingDisabled =
-    isLoading || totalNights === 0 || exceedsGuestLimit || isDateInvalid;
+    isCancelLoading || isConfirmLoading || isCreateLoading || totalNights === 0 || exceedsGuestLimit || isDateInvalid;
 
   /* ---------- PAYMENT HANDLER ---------- */
   const handlePayment = async () => {
@@ -155,54 +155,59 @@ export default function RoomDetailsPage() {
         return;
       }
 
-      /* 1️⃣ Create Razorpay Order */
+      /* 1️⃣ CREATE PENDING BOOKING */
+      const pendingRes = await createPendingBooking.mutateAsync({
+        roomId: room.id,
+        checkIn: range.from.toISOString(),
+        checkOut: range.to.toISOString(),
+        bookingDates: selectedDates,
+        guests: {
+          adults: bookingData.adults,
+          children: bookingData.children,
+        },
+        nights: totalNights,
+        pricePerNight: room.price,
+        gst: room.gst,
+        totalAmount,
+      });
+
+      const bookingId = pendingRes.bookingId;
+
+      /* 2️⃣ CREATE PAYMENT ORDER */
       const orderRes = await createOrder.mutateAsync({
         totalAmount,
       });
 
       const { orderId, amount, currency, keyId } = orderRes;
 
-      if (!orderId) throw new Error("Order ID not found");
-
-      /* 2️⃣ Open Razorpay Checkout */
+      /* 3️⃣ OPEN RAZORPAY */
       await processPayment({
-        verifyPayment:verifyPayment.mutateAsync,
+        verifyPayment: verifyPayment.mutateAsync,
         orderId,
         amount: Number(amount),
         currency,
-        userInfo,
         keyId,
+        userInfo,
 
-        /* 3️⃣ After payment verified → create booking */
+        /* 4️⃣ PAYMENT SUCCESS → CONFIRM BOOKING */
         onSuccess: async () => {
-          const payload = {
-            roomId: room.id,
-            checkIn: range.from.toISOString(),
-            checkOut: range.to.toISOString(),
-            bookingDates: selectedDates,
+          await confirmBooking.mutateAsync({
+            bookingId,
             guest: {
               name: userInfo.name,
               email: userInfo.email,
               mobile: userInfo.mobileNumber,
             },
-            guests: {
-              adults: bookingData.adults,
-              children: bookingData.children,
-            },
-            nights: totalNights,
-            pricePerNight: room.price,
-            gst: room.gst,
-            totalAmount,
-            status: "BOOKED",
-          };
+          });
 
-          await createBooking.mutateAsync(payload);
           toast.success("Booking confirmed 🎉");
           router.push("/profile");
         },
 
-        onFailure: () => {
-          toast.error("Payment failed or cancelled");
+        /* 5️⃣ PAYMENT FAILED → DELETE PENDING BOOKING */
+        onFailure: async () => {
+          await cancelPendingBooking.mutateAsync(bookingId);
+          toast.error("Payment failed. Booking released.");
         },
       });
     } catch (err) {
@@ -423,10 +428,10 @@ export default function RoomDetailsPage() {
               whileTap={!isBookingDisabled ? { scale: 0.98 } : {}}
               className={`w-full py-3 rounded-xl text-lg text-white flex items-center justify-center gap-2 ${isBookingDisabled
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-primaryLite hover:opacity-90"
+                : "bg-primaryLite cursor-pointer hover:opacity-90"
                 }`}
             >
-              {isLoading ? (
+              {isCreateLoading || isConfirmLoading || isCancelLoading ? (
                 <>
                   <LoadingSpinner />
                   Booking...
@@ -446,7 +451,7 @@ export default function RoomDetailsPage() {
                 whileTap={!(isBookingDisabled || totalNights === 0) ? { scale: 0.98 } : {}}
                 className={`w-full py-3 rounded-xl text-lg text-white flex items-center justify-center gap-2 ${isBookingDisabled || totalNights === 0
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-yellow-600 hover:opacity-90"
+                  : "bg-yellow-600 cursor-pointer hover:opacity-90"
                   }`}
               >
                 {isHolding ? (

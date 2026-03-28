@@ -2,6 +2,7 @@ import Booking from "../models/Booking.js";
 import Room from "../models/Room.js";
 import User from "../models/User.js";
 import { getDatesBetween } from "../controllers/booking/getDatesBetween.js";
+import { sendReviewMail } from "../controllers/auth/sendEmail.js";
 
 /* ---------------- HELPERS ---------------- */
 
@@ -30,12 +31,17 @@ const isPastDate = (dateStr) => {
   return date < today;
 };
 
+// Check if pending payment exceeded 5 minutes
+const isExpiredPending = (createdAt) => {
+  return Date.now() - new Date(createdAt).getTime() > 5 * 60 * 1000;
+};
+
 /* ---------------- CRON JOB ---------------- */
 
 export const expireBookingsJob = async () => {
   try {
     const bookings = await Booking.find({
-      status: { $in: ["BOOKED", "HOLD"] },
+      status: { $in: ["PENDING_PAYMENT", "HOLD", "BOOKED"] },
     });
 
     for (const booking of bookings) {
@@ -43,8 +49,8 @@ export const expireBookingsJob = async () => {
       if (!room) continue;
 
       /* =========================
-         CLEANUP RULE (IMPORTANT)
-         Remove yesterday & past dates
+         CLEANUP RULE
+         Remove past dates globally
       ========================== */
       room.holdDates = room.holdDates.filter(
         (d) => !isPastDate(toDateString(d))
@@ -55,12 +61,28 @@ export const expireBookingsJob = async () => {
       );
 
       /* =========================
-         GET BOOKING DATE RANGE
+         BOOKING DATE RANGE
       ========================== */
       const bookingDates = getDatesBetween(
         booking.checkIn,
         booking.checkOut
       ).map(toDateString);
+
+      /* =========================
+         RULE 0: PENDING_PAYMENT → DELETE (5 mins)
+      ========================== */
+      if (
+        booking.status === "PENDING_PAYMENT" &&
+        isExpiredPending(booking.createdAt)
+      ) {
+        room.holdDates = room.holdDates.filter(
+          (d) => !bookingDates.includes(toDateString(d))
+        );
+
+        await room.save();
+        await booking.deleteOne();
+        continue;
+      }
 
       /* =========================
          RULE 1: HOLD → EXPIRED
@@ -89,12 +111,47 @@ export const expireBookingsJob = async () => {
 
         booking.status = "EXPIRED";
 
-        // Increment completed bookings
         if (booking.guest?.email) {
           await User.findOneAndUpdate(
             { email: booking.guest.email },
             { $inc: { totalBookings: 1 } }
           );
+        }
+
+        
+      /* =========================
+        RULE 3: CANCELLED → CANCELLED_ITEM
+        Check-in day after 12 PM
+      ========================== */
+      if (booking.status === "CANCELLED" && isAfter12PM(booking.checkIn)) {
+        booking.status = "CANCELLED_ITEM";
+
+        room.holdDates = room.holdDates.filter(
+          (d) => !bookingDates.includes(toDateString(d))
+        );
+
+        room.bookedDates = room.bookedDates.filter(
+          (d) => !bookingDates.includes(toDateString(d))
+        );
+
+        await room.save();
+        await booking.save();
+        continue;
+      }
+
+        // Send review mail only once
+        if (booking.guest?.email && !booking.reviewMailSent) {
+          booking.reviewMailSent = true;
+          await booking.save();
+
+          try {
+            await sendReviewMail(booking);
+            console.log(`📩 Review mail sent to ${booking.guest.email}`);
+          } catch (err) {
+            booking.reviewMailSent = false;
+            await booking.save();
+            console.error("❌ Failed to send review email:", err);
+          }
         }
 
         await room.save();

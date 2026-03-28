@@ -46,6 +46,8 @@ export default function BookingsPage() {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [showHistory, setShowHistory] = useState(false);
+  const [showCancelReason, setShowCancelReason] = useState(false);
+  const [currentCancelReason, setCurrentCancelReason] = useState("");
 
   const {
     getAllBookingsAndHoldings,
@@ -127,7 +129,7 @@ export default function BookingsPage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowHistory(false)}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${!showHistory ? "bg-primaryLite text-white" : "border"}`}
+            className={`px-4 py-2 cursor-pointer rounded-lg whitespace-nowrap ${!showHistory ? "bg-primaryLite text-white" : "border"}`}
           >
             Upcoming
           </motion.button>
@@ -139,7 +141,7 @@ export default function BookingsPage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowHistory(true)}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${showHistory ? "bg-primaryLite text-white" : "border"}`}
+            className={`px-4 py-2 cursor-pointer rounded-lg whitespace-nowrap ${showHistory ? "bg-primaryLite text-white" : "border"}`}
           >
             History
           </motion.button>
@@ -207,10 +209,24 @@ export default function BookingsPage() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.05 + 0.1 }}
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyle[b.status?.toLowerCase()] || "bg-gray-100 text-gray-600"
+                        className={`px-3 py-1 flex items-center justify-center rounded-full text-xs font-medium ${statusStyle[b.status?.toLowerCase()] || "bg-gray-100 text-gray-600"
                           }`}
                       >
                         {b.status?.toUpperCase()}
+                        {b.status === "CANCEL_REQUESTED" && (
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => {
+                              setCurrentCancelReason(b.cancelReason);
+                              setShowCancelReason(true);
+                            }}
+                            className="text-blue-600 p-1 cursor-pointer rounded-full hover:bg-blue-100"
+                            title="View Cancel Reason"
+                          >
+                            <Icon icon="mdi:information-outline" width={20} height={20} />
+                          </motion.button>
+                        )}
                       </motion.span>
                     </td>
                     {!showHistory && (
@@ -244,7 +260,7 @@ export default function BookingsPage() {
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
                               onClick={() => approveCancelBookings.mutate(b._id)}
-                              className="text-green-600 text-sm hover:underline"
+                              className="text-green-600 cursor-pointer text-sm hover:underline"
                             >
                               {approveCancelBookings.isPending ? "Approving..." : "Accept"}
                             </motion.button>
@@ -253,7 +269,7 @@ export default function BookingsPage() {
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
                               onClick={() => rejectCancelBookings.mutate(b._id)}
-                              className="text-red-500 text-sm hover:underline"
+                              className="text-red-500 cursor-pointer text-sm hover:underline"
                             >
                               {rejectCancelBookings.isPending ? "Rejecting..." : "Reject"}
                             </motion.button>
@@ -282,6 +298,34 @@ export default function BookingsPage() {
           </tbody>
         </table>
       </motion.div>
+      <AnimatePresence>
+        {showCancelReason && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowCancelReason(false)}
+          >
+            <motion.div
+              className="bg-white rounded-xl p-6 w-80 max-w-full"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()} // prevent modal close on inner click
+            >
+              <h2 className="text-xl font-semibold mb-4">Cancel Reason</h2>
+              <p className="text-gray-700">{currentCancelReason || "No reason provided."}</p>
+              <button
+                className="mt-6 w-full py-2 cursor-pointer bg-primaryLite text-white rounded-xl hover:opacity-90"
+                onClick={() => setShowCancelReason(false)}
+              >
+                Close
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

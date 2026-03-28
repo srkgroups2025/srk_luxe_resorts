@@ -26,7 +26,6 @@ export default function Header() {
         enabledUpcoming: isAdminLoggedIn,
         enabledHistory: false,
     });
-
     const syncAuth = () => {
         const storedUser = localStorage.getItem("userInfo");
         setUserInfo(storedUser ? JSON.parse(storedUser) : null);
@@ -81,14 +80,16 @@ export default function Header() {
                                 >
                                     <FaRegBell className="text-secondaryLite" />
                                 </motion.button>
-                                <motion.span
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ type: "spring", stiffness: 300 }}
-                                    className="absolute -top-1 -right-1 bg-red text-secondaryLite text-[10px] px-[6px] py-[2px] rounded-[16px]"
-                                >
-                                    {getAllBookingsAndHoldings?.data?.count || 0}
-                                </motion.span>
+                                {getAllBookingsAndHoldings?.data?.count > 0 && (
+                                    <motion.span
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        transition={{ type: "spring", stiffness: 300 }}
+                                        className="absolute -top-1 -right-1 bg-red text-secondaryLite text-[10px] px-[6px] py-[2px] rounded-[16px]"
+                                    >
+                                        {getAllBookingsAndHoldings?.data?.count}
+                                    </motion.span>
+                                )}
                             </Link>
                         </div>
                     )}
@@ -112,8 +113,8 @@ export default function Header() {
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ duration: 0.3 }}
                                     src={
-                                        userInfo?.image ||
-                                        `https://avatar.iran.liara.run/username?username=${userInfo?.name}`
+                                        `https://avatar.iran.liara.run/username?username=${userInfo?.name}` ||
+                                        userInfo?.image
                                     }
                                     className="w-12 h-12 rounded-full border-2 border-secondaryLite"
                                 />
@@ -126,7 +127,7 @@ export default function Header() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => setOpen(true)}
-                            className="px-6 py-2 rounded-full bg-buttons text-white"
+                            className="px-6 py-2 cursor-pointer rounded-full bg-buttons text-white"
                         >
                             Login
                         </motion.button>

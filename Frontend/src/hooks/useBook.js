@@ -6,19 +6,36 @@ import { toast } from "sonner";
 export const useCreateAndHoldBooking = () => {
   const queryClient = useQueryClient();
 
-  const createBooking = useMutation({
+  const createPendingBooking = useMutation({
     mutationFn: async (bookingData) => {
-      const response = await axiosInstance({
-        url: ApiRoutes.booking.createBooking.path,
-        method: ApiRoutes.booking.createBooking.method,
+      const res = await axiosInstance({
+        url: ApiRoutes.booking.createPendingBooking.path,
+        method: ApiRoutes.booking.createPendingBooking.method,
         data: bookingData,
       });
-      return response.data;
+      return res.data;
     },
-    onError: (error) => {
-      toast.error(
-        error.response?.data?.message || "Failed to create booking."
-      );
+  });
+
+  const confirmBooking = useMutation({
+    mutationFn: async (data) => {
+      const res = await axiosInstance({
+        url: ApiRoutes.booking.confirmBooking.path,
+        method: ApiRoutes.booking.confirmBooking.method,
+        data,
+      });
+      return res.data;
+    },
+  });
+
+  const cancelPendingBooking = useMutation({
+    mutationFn: async (bookingId) => {
+      const res = await axiosInstance({
+        url: ApiRoutes.booking.cancelPendingBooking.path,
+        method: ApiRoutes.booking.cancelPendingBooking.method,
+        data: { bookingId },
+      });
+      return res.data;
     },
   });
 
@@ -43,8 +60,12 @@ export const useCreateAndHoldBooking = () => {
   });
 
   return {
-    createBooking,
-    isLoading: createBooking.isLoading,
+    createPendingBooking,
+    isCreateLoading: createPendingBooking.isLoading,
+    confirmBooking,
+    isConfirmLoading: confirmBooking.isLoading,
+    cancelPendingBooking,
+    isCancelLoading: cancelPendingBooking.isLoading,
     holdBooking,
     isHolding: holdBooking.isLoading,
   };
@@ -104,7 +125,6 @@ export const useAdminBookings = ({ enabledUpcoming, enabledHistory }) => {
       return res.data;
     },
     enabled: enabledUpcoming, // ✅ controlled
-    staleTime: 5 * 60 * 1000,
   });
 
   const getAllExpiredBookingsAndHoldings = useQuery({
@@ -117,7 +137,6 @@ export const useAdminBookings = ({ enabledUpcoming, enabledHistory }) => {
       return res.data;
     },
     enabled: enabledHistory, // ✅ controlled
-    staleTime: 5 * 60 * 1000,
   });
 
   const cancelAdminHoldings = useMutation({

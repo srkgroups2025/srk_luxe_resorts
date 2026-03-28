@@ -7,9 +7,12 @@ const roomSchema = new mongoose.Schema({
   maxGuest: { type: Number, required: true },
   amenities: { type: [String], default: [] }, // e.g., ["WiFi", "AC", "TV"]
   description: { type: String, required: true },
-  bookedDates: { type: [Date], default: [] }, // Dates when the room is booked
+  bookedDates: {
+    type: [String],
+    default: [],
+  },
   holdDates: {
-    type: [String], // admin holds
+    type: [String], 
     default: [],
   },
   images: { type: [String], default: [] }, // Array of image URLs

@@ -30,7 +30,7 @@ export const processPayment = async ({
         key: keyId,
         amount,
         currency,
-        name: "Your Hotel Name",
+        name: "SRK LUXE RESORTS",
         order_id: orderId,
 
         handler: async (response) => {

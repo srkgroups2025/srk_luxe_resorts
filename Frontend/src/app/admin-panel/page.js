@@ -154,7 +154,7 @@ export default function AdminPanel() {
                                 setView("monthly");
                                 setShowDropdown("month");
                             }}
-                            className={`px-4 py-1 rounded-full text-sm flex items-center gap-1
+                            className={`px-4 py-1 cursor-pointer rounded-full text-sm flex items-center gap-1
                                 ${view === "monthly" ? "bg-buttons text-white" : "border"}`}
                         >
                             {months[selectedMonth]}
@@ -169,7 +169,7 @@ export default function AdminPanel() {
                                 setView("yearly");
                                 setShowDropdown("year");
                             }}
-                            className={`px-4 py-1 rounded-full text-sm flex items-center gap-1
+                            className={`px-4 py-1 cursor-pointer rounded-full text-sm flex items-center gap-1
                                 ${view === "yearly" ? "bg-buttons text-white" : "border"}`}
                         >
                             {selectedYear}
@@ -184,7 +184,7 @@ export default function AdminPanel() {
                                 setView("overall");
                                 setShowDropdown(false);
                             }}
-                            className={`px-4 py-1 rounded-full text-sm
+                            className={`px-4 py-1 cursor-pointer rounded-full text-sm
                                 ${view === "overall" ? "bg-buttons text-white" : "border"}`}
                         >
                             Overall

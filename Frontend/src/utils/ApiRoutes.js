@@ -1,5 +1,9 @@
 import path from "path";
 
+export const BASE_URL =
+  // "https://api.srkluxeresortsudumalpet.com" ||
+  "http://localhost:5000";
+
 export const ApiRoutes = {
   auth: {
     sendOtp: { path: "/api/auth/send-mobile-otp", method: "POST" },
@@ -39,7 +43,9 @@ export const ApiRoutes = {
 
   booking: {
     /* CUSTOMER */
-    createBooking: { path: "/api/bookings/book", method: "POST" },
+    createPendingBooking: { path: "/api/bookings/book/pending", method: "POST" },
+    confirmBooking: { path: "/api/bookings/book/confirm", method: "PATCH" },
+    cancelPendingBooking: { path: "/api/bookings/book/cancel", method: "DELETE" },
     getUserBookings: { path: "/api/bookings/user", method: "GET" },
     cancelBooking: (bookingId) => ({
       path: `/api/bookings/book/${bookingId}/cancel`,
@@ -77,5 +83,10 @@ export const ApiRoutes = {
   payment: {
     createOrder: { path: "/api/payment/create-order", method: "POST" },
     verifyPayment: { path: "/api/payment/verify", method: "POST" },
+  },
+
+  review: {
+    createReview: { path: "/api/reviews/create", method: "POST" },
+    getReview: { path: "/api/reviews/", method: "GET" },
   },
 };
