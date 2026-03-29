@@ -11,7 +11,6 @@ export const signUpEmailSendor = async (email, verificationLink) => {
     });
 
     await transporter.verify();
-    console.log("✅ Email transporter ready");
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -50,7 +49,6 @@ export const signUpEmailSendor = async (email, verificationLink) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Verification email sent to ${email}`);
   } catch (error) {
     console.error("❌ Error sending verification email:", error);
     throw error;
@@ -103,7 +101,6 @@ export const resetPasswordEmailSender = async (email, resetLink) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Reset password email sent to ${email}`);
   } catch (error) {
     console.error("❌ Reset email error:", error);
     throw error;
@@ -156,7 +153,6 @@ export const sendBookingConfirmationEmail = async (booking) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ Booking confirmation email sent to ${booking.guest.email}`);
   } catch (error) {
     console.error("❌ Error sending booking email:", error);
   }

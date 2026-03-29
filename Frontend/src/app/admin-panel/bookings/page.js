@@ -70,15 +70,49 @@ export default function BookingsPage() {
   // 🔍 Search filter
   const filteredData = useMemo(() => {
     const source = showHistory ? historyBookings : upcomingBookings;
-    const searchLower = search.toLowerCase();
+    const query = search.trim();
+    if (!query) return source;
+
+    const searchLower = query.toLowerCase();
+    const searchDigits = query.replace(/\D/g, "");
+
+    const toLowerString = (value) =>
+      value === null || value === undefined ? "" : String(value).toLowerCase();
+
+    const digitsOnly = (value) =>
+      value === null || value === undefined ? "" : String(value).replace(/\D/g, "");
+
+    const guestName = (booking) => {
+      const guest = booking?.guest;
+      if (!guest) return "";
+      if (typeof guest === "string") return guest;
+      if (typeof guest?.name === "string") return guest.name;
+      if (typeof guest?.fullName === "string") return guest.fullName;
+      if (typeof guest?.guestName === "string") return guest.guestName;
+      const first = typeof guest?.firstName === "string" ? guest.firstName : "";
+      const last = typeof guest?.lastName === "string" ? guest.lastName : "";
+      return `${first} ${last}`.trim();
+    };
+
+    const guestMobile = (booking) =>
+      booking?.guest?.mobile ?? booking?.mobile ?? booking?.phone ?? booking?.guestMobile;
+
+    const bookingId = (booking) => booking?.bookingId ?? booking?._id ?? booking?.id;
+
+    const roomName = (booking) =>
+      booking?.roomId?.name ?? booking?.room?.name ?? booking?.roomName;
 
     return source.filter((b) => {
-      return (
-        b.bookingId?.toLowerCase().includes(searchLower) ||
-        b.mobile?.includes(search) ||
-        b.guest?.toLowerCase().includes(searchLower) ||
-        b.roomId?.name?.toLowerCase().includes(searchLower)
-      );
+      const matchesBookingId = toLowerString(bookingId(b)).includes(searchLower);
+      const matchesGuest = toLowerString(guestName(b)).includes(searchLower);
+      const matchesRoom = toLowerString(roomName(b)).includes(searchLower);
+
+      const mobileRaw = guestMobile(b);
+      const matchesMobile = searchDigits
+        ? digitsOnly(mobileRaw).includes(searchDigits)
+        : toLowerString(mobileRaw).includes(searchLower);
+
+      return matchesBookingId || matchesMobile || matchesGuest || matchesRoom;
     });
   }, [search, showHistory, upcomingBookings, historyBookings]);
 
@@ -119,7 +153,7 @@ export default function BookingsPage() {
             placeholder="Search by Booking ID, Mobile, Guest, Room"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-4 py-2 border rounded-full w-full sm:w-80 focus:ring-2 focus:ring-primaryLite"
+            className="px-4 py-2 border rounded-full w-full sm:w-90 focus:ring-2 focus:ring-primaryLite"
           />
 
           <motion.button

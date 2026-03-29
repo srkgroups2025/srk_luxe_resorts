@@ -35,7 +35,6 @@ export default function BookPage() {
   const selectedDates = bookingData.checkIn
     ? getDatesBetween(bookingData.checkIn, bookingData.checkOut)
     : [];
-  console.log('selectedDates', selectedDates)
 
   const formatDayWithMonth = (dateStr) => {
   const date = new Date(dateStr);
@@ -71,7 +70,6 @@ export default function BookPage() {
               ...(room.bookedDates || []),
               ...(room.holdDates || []),
             ];
-              console.log('booked', booked)
 
             const availableDates = selectedDates.filter(
               (date) => !booked.includes(date)
@@ -82,9 +80,6 @@ export default function BookPage() {
               selectedDates.length > 0;
 
             const noneAvailable = availableDates.length === 0;
-  console.log('availableDates', availableDates)
-  console.log('allAvailable', allAvailable)
-  console.log('noneAvailable', noneAvailable)
             return (
               <motion.div
                 key={room.id}

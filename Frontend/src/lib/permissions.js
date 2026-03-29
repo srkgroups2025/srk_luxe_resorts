@@ -1,5 +1,4 @@
 export function getPermissions(user) {
-  console.log('getPermissions user:', user);
   if (!user) {
     return {
       admin: false,

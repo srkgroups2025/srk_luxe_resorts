@@ -146,7 +146,6 @@ export const expireBookingsJob = async () => {
 
           try {
             await sendReviewMail(booking);
-            console.log(`📩 Review mail sent to ${booking.guest.email}`);
           } catch (err) {
             booking.reviewMailSent = false;
             await booking.save();
@@ -159,7 +158,6 @@ export const expireBookingsJob = async () => {
       }
     }
 
-    console.log("✅ Expire bookings job completed");
   } catch (error) {
     console.error("❌ Expire bookings job failed:", error);
   }

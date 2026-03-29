@@ -9,6 +9,7 @@ import { getPermissions } from "@/lib/permissions";
 import { useAuth } from "@/hooks/useUser";
 import { useAdminBookings } from "../hooks/useBook";
 import { motion } from "framer-motion";
+import UserAvatar from "./UserAvatar";
 
 export default function Header() {
     const [open, setOpen] = useState(false);
@@ -108,15 +109,18 @@ export default function Header() {
                                 onClick={() => setShowDropdown(prev => !prev)}
                                 className="cursor-pointer flex items-center"
                             >
-                                <motion.img
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.3 }}
-                                    src={
-                                        `https://avatar.iran.liara.run/username?username=${userInfo?.name}` ||
-                                        userInfo?.image
-                                    }
-                                    className="w-12 h-12 rounded-full border-2 border-secondaryLite"
+                                <UserAvatar
+                                    name={userInfo?.name}
+                                    src={userInfo?.image}
+                                    alt={userInfo?.name || "User"}
+                                    className="w-12 h-12 rounded-full border-2 border-secondaryLite overflow-hidden"
+                                    imgClassName="object-cover"
+                                    fallbackClassName="bg-secondaryLite text-teritaryLite font-extrabold text-xl tracking-wide"
+                                    motionProps={{
+                                        initial: { opacity: 0, scale: 0.8 },
+                                        animate: { opacity: 1, scale: 1 },
+                                        transition: { duration: 0.3 },
+                                    }}
                                 />
                             </motion.button>
                         </div>

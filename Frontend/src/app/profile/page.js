@@ -7,6 +7,7 @@ import { useUserBookings } from "@/hooks/useBook";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { QRCodeCanvas } from "qrcode.react";
+import UserAvatar from "@/components/UserAvatar";
 
 // Skeleton Loader Components
 const ProfileSkeleton = () => (
@@ -178,13 +179,18 @@ export default function ProfilePage() {
         {/* LEFT SECTION */}
         <div className="lg:col-span-2 flex flex-col justify-between">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 border-b pb-6">
-            <motion.img
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              src={user.image || `https://avatar.iran.liara.run/username?username=${user.name}`}
+            <UserAvatar
+              name={user.name}
+              src={user.image}
               alt="Profile"
-              className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 object-cover lg:hidden"
+              className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 overflow-hidden lg:hidden"
+              imgClassName="object-cover"
+              fallbackClassName="bg-secondaryLite text-teritaryLite font-extrabold text-4xl sm:text-5xl tracking-wide"
+              motionProps={{
+                initial: { opacity: 0, scale: 0.8 },
+                animate: { opacity: 1, scale: 1 },
+                transition: { duration: 0.5 },
+              }}
             />
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -286,7 +292,14 @@ export default function ProfilePage() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="hidden lg:flex flex-col items-center justify-center gap-6"
         >
-          <img src={user.image || `https://avatar.iran.liara.run/username?username=${user.name}`} alt="Profile" className="w-70 h-70 xl:w-90 xl:h-90 2xl:w-100 2xl:h-100 rounded-full object-cover shadow-md" />
+          <UserAvatar
+            name={user.name}
+            src={user.image}
+            alt="Profile"
+            className="w-70 h-70 xl:w-90 xl:h-90 2xl:w-100 2xl:h-100 rounded-full overflow-hidden shadow-md"
+            imgClassName="object-cover"
+            fallbackClassName="bg-secondaryLite text-teritaryLite font-extrabold text-7xl xl:text-8xl tracking-wide"
+          />
           {user.role === "admin" && (
             <motion.span
               initial={{ opacity: 0, y: -10 }}
