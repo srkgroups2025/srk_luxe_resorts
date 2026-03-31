@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
@@ -24,7 +23,7 @@ connectDB();
 
 const app = express();
 
-/* 🌐 CORS configuration */
+/* 🌐 Allowed Origins */
 const allowedOrigins = [
   "http://localhost:3000",
   "https://srk-luxe-resorts.vercel.app",
@@ -32,23 +31,31 @@ const allowedOrigins = [
   "https://srkluxeresortsudumalpet.com"
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (Postman, mobile apps)
-      if (!origin) return callback(null, true);
+/* 🌐 Custom CORS Middleware (More Reliable in Production) */
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 /* 🧠 Middlewares */
 app.use(express.json());
@@ -56,8 +63,7 @@ app.use(cookieParser());
 
 /* 🚏 Routes */
 app.use("/api/auth", authRoutes);
-app.use("/api/rooms", roomRoutes);
-app.use("/api/rooms", roomRoutes);
+app.use("/api/rooms", roomRoutes); // ✅ removed duplicate
 app.use("/api/amenities", amenitiesRoutes);
 app.use("/api/nearby-places", nearbyPlacesRoutes);
 app.use("/api/events", eventRoutes);
@@ -66,11 +72,27 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/reviews", reviewRoutes);
 
-/* ❤️ Health check (optional but recommended) */
+/* ❤️ Health check */
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     message: "SRK Luxe Resorts API is running...",
+  });
+});
+
+/* ❗ Global Error Handler (ensures CORS headers on errors) */
+app.use((err, req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  res.status(500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
   });
 });
 
