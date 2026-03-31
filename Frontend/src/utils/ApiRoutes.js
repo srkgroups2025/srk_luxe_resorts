@@ -1,8 +1,8 @@
 import path from "path";
 
 export const BASE_URL =
-  // "https://api.srkluxeresortsudumalpet.com" ||
-  "http://localhost:5000";
+  "https://api.srkluxeresortsudumalpet.com" 
+  // "http://localhost:5000";
 
 export const ApiRoutes = {
   auth: {
