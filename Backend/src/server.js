@@ -9,6 +9,7 @@ import roomRoutes from "./routes/room.routes.js";
 import amenitiesRoutes from "./routes/amenities.routes.js";
 import nearbyPlacesRoutes from "./routes/nearbyPlaces.routes.js";
 import eventRoutes from "./routes/event.routes.js";
+import BGRoutes from "./routes/bg.routes.js";
 import bookingRoutes from "./routes/booking.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
@@ -67,6 +68,7 @@ app.use("/api/rooms", roomRoutes); // ✅ removed duplicate
 app.use("/api/amenities", amenitiesRoutes);
 app.use("/api/nearby-places", nearbyPlacesRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/bg", BGRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/payment", paymentRoutes);

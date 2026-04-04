@@ -1,34 +1,65 @@
 
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Header from "@/components/Header";
 import Amenities from "@/components/Amenities";
 import NearbyPlaces from "@/components/NearbyPlaces";
 import Event from "@/components/Events";
 import Footer from "@/components/Footer";
-import { useRouter } from "next/navigation";
 import CheckAvailablity from "@/components/CheckAvailablity";
 import Details from "@/components/Details";
 import WhatsappButton from "@/components/WhatsappButton";
 import Loader from "@/components/Loader";
 import Reviews from "@/components/Reviews";
+import useBG from "@/hooks/useBG";
+
+const FALLBACK_BACKGROUND = "/bg_img.jpeg";
+const SLIDE_INTERVAL = 4000;
 
 export default function Home() {
-  const router = useRouter();
+  const { getAllBG } = useBG();
 
   const [loading, setLoading] = useState(true);
+  const [backgroundImages, setBackgroundImages] = useState([FALLBACK_BACKGROUND]);
+  const [activeBackgroundIndex, setActiveBackgroundIndex] = useState(0);
 
   useEffect(() => {
     if (typeof document !== "undefined" && document.readyState === "complete") {
       setLoading(false);
       return;
     }
+
     const onLoad = () => setLoading(false);
+
     if (typeof window !== "undefined") window.addEventListener("load", onLoad);
+
     return () => {
       if (typeof window !== "undefined") window.removeEventListener("load", onLoad);
     };
   }, []);
+
+  useEffect(() => {
+    const images =
+      getAllBG.data?.flatMap((bgItem) =>
+        (bgItem?.images ?? []).filter(
+          (imageUrl) => typeof imageUrl === "string" && imageUrl.trim().length > 0
+        )
+      ) ?? [];
+
+    setBackgroundImages(images.length > 0 ? images : [FALLBACK_BACKGROUND]);
+    setActiveBackgroundIndex(0);
+  }, [getAllBG.data]);
+
+  useEffect(() => {
+    if (backgroundImages.length <= 1) return;
+
+    const intervalId = window.setInterval(() => {
+      setActiveBackgroundIndex((currentIndex) => (currentIndex + 1) % backgroundImages.length);
+    }, SLIDE_INTERVAL);
+
+    return () => window.clearInterval(intervalId);
+  }, [backgroundImages]);
 
   if (loading) return <Loader />;
 
@@ -38,7 +69,22 @@ export default function Home() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative h-[90vh] sm:h-screen bg-[url('/bg_img.jpeg')] bg-cover bg-center">
+      <section className="relative h-[90vh] overflow-hidden sm:h-screen">
+        <AnimatePresence initial={false} mode="sync">
+          <motion.div
+            key={backgroundImages[activeBackgroundIndex] ?? FALLBACK_BACKGROUND}
+            initial={{ opacity: 0, scale: 1.03 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.03 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none"
+            aria-hidden="true"
+            style={{
+              backgroundImage: `url(${backgroundImages[activeBackgroundIndex] ?? FALLBACK_BACKGROUND})`,
+            }}
+          />
+        </AnimatePresence>
+
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/60"></div>
 

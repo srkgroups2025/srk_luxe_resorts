@@ -5,6 +5,7 @@ import ManageRooms from "./rooms/page";
 import Amenities from "./amenities/page";
 import NearbyPlaces from "./nearbyPlaces/page";
 import Events from "./event/page";
+import BG from "./bg/page";
 
 export default function AdminPanel() {
 
@@ -47,6 +48,13 @@ export default function AdminPanel() {
                             <h2 className="text-lg font-semibold text-primaryLite">Events</h2>
                         </div>
                         <Events embedded />
+                    </section>
+
+                    <section id="bg" className="rounded-2xl bg-cards p-4 shadow-sm ring-1 ring-white/10 sm:p-6">
+                        <div className="mb-4 flex items-center justify-between gap-4">
+                            <h2 className="text-lg font-semibold text-primaryLite">BG Images</h2>
+                        </div>
+                        <BG embedded />
                     </section>
                 </div>
             </motion.div>

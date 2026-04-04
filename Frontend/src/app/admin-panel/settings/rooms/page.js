@@ -346,20 +346,33 @@ export default function ManageRooms({ embedded = false } = {}) {
                                 ["gst", "GST %"],
                                 ["maxGuest", "Max Guests"],
                                 ["amenities", "Amenities (comma separated)"],
-                            ].map(([key, label], idx) => (
+                            ].map(([key, label], idx) => {
+                            const isNumberField = ["price", "gst", "maxGuest"].includes(key);
+
+                            return (
                                 <motion.input
                                     key={key}
+                                    type={isNumberField ? "number" : "text"}
+                                    inputMode={isNumberField ? "numeric" : "text"}
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: idx * 0.05 }}
                                     placeholder={label}
                                     value={roomForm[key]}
-                                    onChange={(e) =>
-                                        setRoomForm({ ...roomForm, [key]: e.target.value })
-                                    }
+                                    onChange={(e) => {
+                                        let value = e.target.value;
+
+                                        // Allow only numbers (and optional decimal for price/gst)
+                                        if (isNumberField) {
+                                        value = value.replace(/[^0-9.]/g, "");
+                                        }
+
+                                        setRoomForm({ ...roomForm, [key]: value });
+                                    }}
                                     className="w-full mb-3 px-4 py-2 border rounded-xl"
                                 />
-                            ))}
+                            );
+                            })}
 
                             <motion.textarea
                                 initial={{ opacity: 0, x: -20 }}

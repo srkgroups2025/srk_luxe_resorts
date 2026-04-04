@@ -92,6 +92,19 @@ export const ApiRoutes = {
     }),
   },
 
+  bg: {
+    createBG: { path: "/api/bg/create", method: "POST" },
+    getAllBG: { path: "/api/bg/", method: "GET" },
+    getBGById: (bgId) => ({
+      path: `/api/bg/${bgId}`,
+      method: "GET",
+    }),
+    deleteBG: (bgId) => ({
+      path: `/api/bg/delete/${bgId}`,
+      method: "DELETE",
+    }),
+  },
+
   booking: {
     /* CUSTOMER */
     createPendingBooking: { path: "/api/bookings/book/pending", method: "POST" },
