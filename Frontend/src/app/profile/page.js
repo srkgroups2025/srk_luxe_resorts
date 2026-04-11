@@ -55,6 +55,7 @@ export default function ProfilePage() {
     data: bookings = [],
     isLoading,
   } = getUserBookings;
+  const isSendingCancelRequest = cancelRequestBooking.isPending;
 
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
@@ -75,6 +76,8 @@ export default function ProfilePage() {
   };
 
   const handleSendCancelRequest = () => {
+    if (isSendingCancelRequest) return;
+
     if (!cancelReason.trim()) {
       return toast.error("Invalid reason", {
         description: "Reason should not be empty",
@@ -90,8 +93,8 @@ export default function ProfilePage() {
         onSuccess: () => {
           setCancelModalOpen(false);
         },
-        onerror: (err) => {
-          toast.error(err.message)
+        onError: (err) => {
+          toast.error(err.message);
         }
       }
     );
@@ -496,9 +499,14 @@ export default function ProfilePage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleSendCancelRequest}
-                  className="flex-1 bg-red text-white py-2 rounded-lg"
+                  disabled={isSendingCancelRequest}
+                  className={`flex-1 text-white py-2 rounded-lg transition ${
+                    isSendingCancelRequest
+                      ? "bg-red/70 cursor-not-allowed"
+                      : "bg-red hover:opacity-90"
+                  }`}
                 >
-                  Send Request
+                  {isSendingCancelRequest ? "Sending..." : "Send Request"}
                 </motion.button>
 
                 <motion.button

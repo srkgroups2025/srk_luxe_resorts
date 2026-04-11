@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
 import useRoom from "../../hooks/useRoom";
@@ -26,6 +27,7 @@ const RoomCardSkeleton = () => (
 
 export default function BookPage() {
   const router = useRouter();
+  const [viewingRoomId, setViewingRoomId] = useState(null);
 
   const { bookingData } = useBooking();
   const { getAllRooms } = useRoom();
@@ -42,6 +44,15 @@ export default function BookPage() {
   const month = date.toLocaleString("default", { month: "short" }); // "Jan", "Feb", etc.
   return `${day} ${month}`;
 };
+
+  const handleViewDetails = (roomId) => {
+    if (viewingRoomId) return;
+
+    setViewingRoomId(roomId);
+    window.setTimeout(() => {
+      router.push(`/book/${roomId}`);
+    }, 0);
+  };
 
   return (
     <div
@@ -139,17 +150,18 @@ export default function BookPage() {
                   )}
 
                   <motion.button
-                    onClick={() => router.push(`/book/${room.id}`)}
-                    disabled={noneAvailable}
-                    whileHover={!noneAvailable ? { scale: 1.02 } : {}}
-                    whileTap={!noneAvailable ? { scale: 0.98 } : {}}
+                    onClick={() => handleViewDetails(room.id)}
+                    disabled={noneAvailable || viewingRoomId === room.id}
+                    whileHover={!noneAvailable && viewingRoomId !== room.id ? { scale: 1.02 } : {}}
+                    whileTap={!noneAvailable && viewingRoomId !== room.id ? { scale: 0.98 } : {}}
                     className={`w-full py-2 rounded-xl text-white flex items-center justify-center gap-2 ${noneAvailable
+                      || viewingRoomId === room.id
                       ? "bg-gray-400 cursor-not-allowed"
                       : " cursor-pointer bg-primaryLite hover:opacity-90"
                       }`}
                   >
                     <Icon icon="mdi:eye" width="18" height="18" />
-                    View Details
+                    {viewingRoomId === room.id ? "Viewing..." : "View Details"}
                   </motion.button>
                 </div>
               </motion.div>

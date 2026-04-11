@@ -14,6 +14,7 @@ export default function CheckAvailability() {
   const [openCalendar, setOpenCalendar] = useState(false);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
+  const [isChecking, setIsChecking] = useState(false);
 
   /* ---------------- HELPERS ---------------- */
 
@@ -35,6 +36,8 @@ export default function CheckAvailability() {
   /* ---------------- HANDLER ---------------- */
 
   const handleCheck = () => {
+    if (isChecking) return;
+
     if (!range.from || !range.to) {
       toast.error("Please select check-in and check-out dates");
       return;
@@ -48,6 +51,7 @@ export default function CheckAvailability() {
       return;
     }
 
+    setIsChecking(true);
     setBookingData({
       checkIn: checkInDate.toISOString(),   // UTC safe
       checkOut: checkOutDate.toISOString(), // UTC safe
@@ -55,7 +59,9 @@ export default function CheckAvailability() {
       children,
     });
 
-    router.push("/book");
+    window.setTimeout(() => {
+      router.push("/book");
+    }, 0);
   };
 
   /* ---------------- UI ---------------- */
@@ -124,9 +130,14 @@ export default function CheckAvailability() {
         {/* CTA */}
         <button
           onClick={handleCheck}
-          className="bg-primaryLite cursor-pointer text-white px-6 py-3 rounded-xl hover:opacity-90"
+          disabled={isChecking}
+          className={`px-6 py-3 rounded-xl text-white transition ${
+            isChecking
+              ? "bg-primaryLite/70 cursor-not-allowed"
+              : "bg-primaryLite cursor-pointer hover:opacity-90"
+          }`}
         >
-          Check
+          {isChecking ? "Checking..." : "Check"}
         </button>
       </div>
     </div>

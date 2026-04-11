@@ -61,13 +61,17 @@ export const useCreateAndHoldBooking = () => {
 
   return {
     createPendingBooking,
-    isCreateLoading: createPendingBooking.isLoading,
+    isCreateLoading: createPendingBooking.isPending,
+    isCreatePending: createPendingBooking.isPending,
     confirmBooking,
-    isConfirmLoading: confirmBooking.isLoading,
+    isConfirmLoading: confirmBooking.isPending,
+    isConfirmPending: confirmBooking.isPending,
     cancelPendingBooking,
-    isCancelLoading: cancelPendingBooking.isLoading,
+    isCancelLoading: cancelPendingBooking.isPending,
+    isCancelPending: cancelPendingBooking.isPending,
     holdBooking,
-    isHolding: holdBooking.isLoading,
+    isHolding: holdBooking.isPending,
+    isHoldingPending: holdBooking.isPending,
   };
 };
 

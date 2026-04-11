@@ -420,12 +420,12 @@ export default function RoomDetailsPage() {
           {/* CTA */}
           <div className="flex gap-4">
             {/* CUSTOMER BOOKING */}
-            <motion.button
-              type="button"
-              disabled={isBookingDisabled}
-              onClick={handlePayment}
-              whileHover={!isBookingDisabled ? { scale: 1.02 } : {}}
-              whileTap={!isBookingDisabled ? { scale: 0.98 } : {}}
+              <motion.button
+                type="button"
+                disabled={isBookingDisabled}
+                onClick={handlePayment}
+                whileHover={!isBookingDisabled ? { scale: 1.02 } : {}}
+                whileTap={!isBookingDisabled ? { scale: 0.98 } : {}}
               className={`w-full py-3 rounded-xl text-lg text-white flex items-center justify-center gap-2 ${isBookingDisabled
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-primaryLite cursor-pointer hover:opacity-90"
@@ -445,11 +445,11 @@ export default function RoomDetailsPage() {
             {permissions.admin && (
               <motion.button
                 type="button"
-                disabled={totalNights === 0 || isHolding}
+                disabled={isBookingDisabled || totalNights === 0 || isHolding}
                 onClick={handleHoldDates}
-                whileHover={!(isBookingDisabled || totalNights === 0) ? { scale: 1.02 } : {}}
-                whileTap={!(isBookingDisabled || totalNights === 0) ? { scale: 0.98 } : {}}
-                className={`w-full py-3 rounded-xl text-lg text-white flex items-center justify-center gap-2 ${isBookingDisabled || totalNights === 0
+                whileHover={!(isBookingDisabled || totalNights === 0 || isHolding) ? { scale: 1.02 } : {}}
+                whileTap={!(isBookingDisabled || totalNights === 0 || isHolding) ? { scale: 0.98 } : {}}
+                className={`w-full py-3 rounded-xl text-lg text-white flex items-center justify-center gap-2 ${isBookingDisabled || totalNights === 0 || isHolding
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-yellow-600 cursor-pointer hover:opacity-90"
                   }`}
