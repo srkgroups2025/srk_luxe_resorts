@@ -1,3 +1,5 @@
+import { TEXT } from "@/constants/site";
+
 export const processPayment = async ({
     verifyPayment,
     orderId,
@@ -30,7 +32,7 @@ export const processPayment = async ({
         key: keyId,
         amount,
         currency,
-        name: "SRK LUXE RESORTS",
+        name: TEXT.SITE.TITLE,
         order_id: orderId,
 
         handler: async (response) => {

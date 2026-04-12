@@ -20,7 +20,7 @@ const useAmenities = () => {
       toast.success(data.message);
     },
     onError: (error) => {
-      toast.error(error?.message);
+      toast.error(error.response.data.message || "Failed to create amenities");
     },  
   });
 
@@ -50,7 +50,7 @@ const useAmenities = () => {
       toast.success(data.message);
     },
     onError: (error) => {
-      toast.error(error?.message);
+      toast.error(error.response.data.message || "Failed to update amenities");
     },  
   });
 

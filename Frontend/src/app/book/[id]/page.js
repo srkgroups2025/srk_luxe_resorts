@@ -49,6 +49,8 @@ export default function RoomDetailsPage() {
 
   const [activeImg, setActiveImg] = useState(room?.images[0]);
   const [openCalendar, setOpenCalendar] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [customerNumber, setCustomerNumber] = useState("");
 
   // User Info
   const [userInfo, setUserInfo] = useState(null);
@@ -212,13 +214,22 @@ export default function RoomDetailsPage() {
       });
     } catch (err) {
       console.error(err);
-      toast.error("Something went wrong");
+      toast.error(err?.response?.data?.message || "Something went wrong");
     }
   };
 
   /* ---------- HOLD DATES HANDLER (ADMIN) ---------- */
   const handleHoldDates = () => {
     if (!range.from || !range.to) return;
+
+    const guestName = customerName.trim();
+    const guestMobile = customerNumber.trim();
+    const guestMobileDigits = guestMobile.replace(/\D/g, "");
+
+    if (!guestName || guestMobileDigits.length !== 10) {
+      toast.error("Please enter the customer name and a 10-digit number");
+      return;
+    }
 
     const payload = {
       roomId: room.id,
@@ -230,12 +241,16 @@ export default function RoomDetailsPage() {
         adults: bookingData.adults,
         children: bookingData.children,
       },
+      guest: {
+        name: guestName,
+        mobile: guestMobileDigits,
+      },
       type: "HOLD",
     };
 
     holdBooking.mutateAsync(payload, {
       onSuccess: () => {
-        router.refresh();
+        router.push("/admin-panel/bookings");
       },
     });
   };
@@ -290,6 +305,7 @@ export default function RoomDetailsPage() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
+          className="relative z-20"
         >
           <h1 className="text-3xl font-bold mb-2">{room.name}</h1>
           <p className="text-xl text-primaryLite font-semibold mb-4">
@@ -297,7 +313,7 @@ export default function RoomDetailsPage() {
           </p>
 
           {/* Date Selection */}
-          <div className="mb-6">
+          <div className="relative z-30 mb-6">
             <label className="text-sm text-grayDark mb-1 block">
               Selected Dates
             </label>
@@ -417,39 +433,94 @@ export default function RoomDetailsPage() {
             </motion.div>
           )}
 
+          {permissions.admin && (
+            <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+              <div className="mb-4">
+                <h3 className="text-base font-semibold text-gray-900">
+                  Hold Customer Details
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Enter the guest details that should appear on the hold booking.
+                </p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
+                    Customer Name
+                  </label>
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Enter customer name"
+                    className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-gray-300 focus:bg-white focus:ring-2 focus:ring-black/5"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
+                    Customer Number
+                  </label>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    value={customerNumber}
+                    maxLength={10}
+                    onChange={(e) =>
+                      setCustomerNumber(
+                        e.target.value.replace(/\D/g, "").slice(0, 10)
+                      )
+                    }
+                    placeholder="Enter mobile number"
+                    className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-gray-300 focus:bg-white focus:ring-2 focus:ring-black/5"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* CTA */}
           <div className="flex gap-4">
             {/* CUSTOMER BOOKING */}
+            {!permissions.admin && (
               <motion.button
                 type="button"
                 disabled={isBookingDisabled}
                 onClick={handlePayment}
                 whileHover={!isBookingDisabled ? { scale: 1.02 } : {}}
                 whileTap={!isBookingDisabled ? { scale: 0.98 } : {}}
-              className={`w-full py-3 rounded-xl text-lg text-white flex items-center justify-center gap-2 ${isBookingDisabled
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-primaryLite cursor-pointer hover:opacity-90"
-                }`}
-            >
-              {isCreateLoading || isConfirmLoading || isCancelLoading ? (
-                <>
-                  <LoadingSpinner />
-                  Booking...
-                </>
-              ) : (
-                "Book Now"
-              )}
-            </motion.button>
+                className={`w-full py-3 rounded-xl text-lg text-white flex items-center justify-center gap-2 ${isBookingDisabled
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-primaryLite cursor-pointer hover:opacity-90"
+                  }`}
+              >
+                {isCreateLoading || isConfirmLoading || isCancelLoading ? (
+                  <>
+                    <LoadingSpinner />
+                    Booking...
+                  </>
+                ) : (
+                  "Book Now"
+                )}
+              </motion.button>
+            )}
 
             {/* ADMIN HOLD */}
             {permissions.admin && (
               <motion.button
                 type="button"
-                disabled={isBookingDisabled || totalNights === 0 || isHolding}
+                disabled={
+                  isBookingDisabled ||
+                  totalNights === 0 ||
+                  isHolding ||
+                  !customerName.trim() ||
+                  customerNumber.replace(/\D/g, "").length !== 10
+                }
                 onClick={handleHoldDates}
-                whileHover={!(isBookingDisabled || totalNights === 0 || isHolding) ? { scale: 1.02 } : {}}
-                whileTap={!(isBookingDisabled || totalNights === 0 || isHolding) ? { scale: 0.98 } : {}}
-                className={`w-full py-3 rounded-xl text-lg text-white flex items-center justify-center gap-2 ${isBookingDisabled || totalNights === 0 || isHolding
+                whileHover={!(isBookingDisabled || totalNights === 0 || isHolding || !customerName.trim() || customerNumber.replace(/\D/g, "").length !== 10) ? { scale: 1.02 } : {}}
+                whileTap={!(isBookingDisabled || totalNights === 0 || isHolding || !customerName.trim() || customerNumber.replace(/\D/g, "").length !== 10) ? { scale: 0.98 } : {}}
+                className={`w-full py-3 rounded-xl text-lg text-white flex items-center justify-center gap-2 ${isBookingDisabled || totalNights === 0 || isHolding || !customerName.trim() || customerNumber.replace(/\D/g, "").length !== 10
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-yellow-600 cursor-pointer hover:opacity-90"
                   }`}

@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { TEXT } from "@/constants/site";
 
 export default function Loader() {
   return (
@@ -8,8 +9,8 @@ export default function Loader() {
         {/* Logo */}
         <div className="relative">
           <Image
-            src="/srk-logo.jpeg"
-            alt="SRK Luxe Resorts"
+            src="/logo.jpeg"
+            alt={TEXT.SITE.TITLE}
             width={120}
             height={120}
             priority

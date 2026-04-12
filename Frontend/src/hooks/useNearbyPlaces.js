@@ -20,7 +20,7 @@ const useNearbyPlaces = () => {
       toast.success(data.message);
     },
     onError: (error) => {
-      toast.error(error?.message);
+      toast.error(error.response.data.message || "Failed to create nearby places");
     },  
   });
 
@@ -50,7 +50,7 @@ const useNearbyPlaces = () => {
       toast.success(data.message);
     },
     onError: (error) => {
-      toast.error(error?.message);
+      toast.error(error.response.data.message || "Failed to update nearby places");
     },  
   });
 

@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useUser";
 import { useAdminBookings } from "../hooks/useBook";
 import { motion } from "framer-motion";
 import UserAvatar from "./UserAvatar";
+import { TEXT } from "@/constants/site";
 
 export default function Header() {
     const [open, setOpen] = useState(false);
@@ -62,7 +63,7 @@ export default function Header() {
                     transition={{ duration: 0.5 }}
                     className="font-[var(--font-heading)] text-2xl font-bold text-primaryLite"
                 >
-                    SRK Luxe Resort
+                    {TEXT.SITE.TITLE}
                 </motion.h1>
 
                 <motion.div

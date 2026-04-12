@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import { motion, AnimatePresence } from "framer-motion";
 import useRoom from "../../../../hooks/useRoom";
 import AutoImageSlider from "@/components/AutoImageSlider";
+import { toast } from "sonner";
 
 
 // Skeleton Loader Component
@@ -180,6 +181,7 @@ export default function ManageRooms({ embedded = false } = {}) {
 
         } catch (error) {
             console.error("Room save failed", error);
+            toast.error(error.response.data.message || "Failed to save room");
         }
     };
 

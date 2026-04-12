@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { TEXT } from "@/constants/site";
 
 export default function Footer() {
     const router = useRouter();
@@ -20,11 +21,10 @@ export default function Footer() {
                 {/* Brand */}
                 <div>
                     <h3 className="text-2xl font-bold text-primaryLite">
-                        SRK Luxe Resort
+                        {TEXT.SITE.TITLE}
                     </h3>
                     <p className="mt-4 text-sm text-gray-300 leading-relaxed">
-                        A luxurious escape for peaceful stays and grand celebrations,
-                        crafted to create timeless memories.
+                        {TEXT.SITE.QUOTES}
                     </p>
                 </div>
 
@@ -69,12 +69,12 @@ export default function Footer() {
                 <div>
                     <h4 className="font-semibold text-lg mb-4">Contact</h4>
                     <ul className="space-y-2 text-sm text-gray-300">
-                        <li>📍Marupatti, udumalpet, Tamil Nadu</li>
-                        <li>📞 +91 75983 46200</li>
+                        <li>📍{TEXT.FOOTER.ADDRESS}</li>
+                        <li>📞 {TEXT.FOOTER.NUMBER}</li>
                         <li className="flex items-center gap-4">
                             {/* Email */}
                             <a
-                                href="https://mail.google.com/mail/?view=cm&fs=1&to=srk.luxe.resort@gmail.com"
+                                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${TEXT.FOOTER.EMAIL}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-2 hover:text-primaryLite transition"
@@ -93,7 +93,7 @@ export default function Footer() {
 
                             {/* Instagram */}
                             <a
-                                href="https://www.instagram.com/srk_luxe.resort/"
+                                href={TEXT.FOOTER.INSTA_LINK}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-2 hover:text-primaryLite transition"
@@ -118,7 +118,7 @@ export default function Footer() {
             {/* Bottom Bar */}
             <div className="border-t border-white/10">
                 <div className="max-w-7xl mx-auto px-8 py-4 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
-                    <p>© {new Date().getFullYear()} SRK Luxe Resort. All rights reserved.</p>
+                    <p>© {new Date().getFullYear()} {TEXT.SITE.TITLE}. All rights reserved.</p>
                     <p className="mt-2 md:mt-0">
                         Designed with ❤️ for luxury stays
                     </p>

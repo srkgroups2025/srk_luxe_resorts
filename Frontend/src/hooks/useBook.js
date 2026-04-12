@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import axiosInstance from "@/utils/axiosInstance";
 import { ApiRoutes } from "@/utils/ApiRoutes";
 import { toast } from "sonner";
@@ -101,7 +106,7 @@ export const useUserBookings = () => {
     },
     onSuccess: () => {
       toast.success("Cancel request sent!");
-      queryClient.invalidateQueries(["getUserBookings"]);
+      queryClient.invalidateQueries({ queryKey: ["getUserBookings"] });
     },
     onError: (error) => {
       toast.error(
@@ -116,31 +121,58 @@ export const useUserBookings = () => {
   };
 };
 
-export const useAdminBookings = ({ enabledUpcoming, enabledHistory }) => {
+export const useAdminBookings = ({
+  enabledUpcoming,
+  enabledHistory,
+  upcomingPage = 1,
+  historyPage = 1,
+  limit = 10,
+  filters = {},
+}) => {
   const queryClient = useQueryClient();
+  const filtersKey = JSON.stringify(filters || {});
+  const normalizeBookingResponse = (data) => ({
+    count: data?.count ?? 0,
+    totalPages: data?.totalPages ?? 0,
+    currentPage: data?.currentPage ?? 1,
+    limit: data?.limit ?? limit,
+    data: Array.isArray(data?.data) ? data.data : [],
+  });
 
   const getAllBookingsAndHoldings = useQuery({
-    queryKey: ["getAllBookingsAndHoldings"],
+    queryKey: ["getAllBookingsAndHoldings", upcomingPage, limit, filtersKey],
     queryFn: async () => {
       const res = await axiosInstance({
         url: ApiRoutes.booking.getAllBookingsAndHoldings.path,
         method: ApiRoutes.booking.getAllBookingsAndHoldings.method,
+        params: {
+          page: upcomingPage,
+          limit,
+          filters: filtersKey,
+        },
       });
-      return res.data;
+      return normalizeBookingResponse(res.data);
     },
-    enabled: enabledUpcoming, // ✅ controlled
+    enabled: enabledUpcoming,
+    placeholderData: keepPreviousData,
   });
 
   const getAllExpiredBookingsAndHoldings = useQuery({
-    queryKey: ["getAllExpiredBookingsAndHoldings"],
+    queryKey: ["getAllExpiredBookingsAndHoldings", historyPage, limit, filtersKey],
     queryFn: async () => {
       const res = await axiosInstance({
         url: ApiRoutes.booking.getExpiredBookingsAndHoldings.path,
         method: ApiRoutes.booking.getExpiredBookingsAndHoldings.method,
+        params: {
+          page: historyPage,
+          limit,
+          filters: filtersKey,
+        },
       });
-      return res.data;
+      return normalizeBookingResponse(res.data);
     },
-    enabled: enabledHistory, // ✅ controlled
+    enabled: enabledHistory,
+    placeholderData: keepPreviousData,
   });
 
   const cancelAdminHoldings = useMutation({
@@ -154,7 +186,8 @@ export const useAdminBookings = ({ enabledUpcoming, enabledHistory }) => {
     onSuccess: () => {
       toast.success("Hold cancelled successfully!");
 
-      queryClient.invalidateQueries(["getAllBookingsAndHoldings"]);
+      queryClient.invalidateQueries({ queryKey: ["getAllBookingsAndHoldings"] });
+      queryClient.invalidateQueries({ queryKey: ["getAllExpiredBookingsAndHoldings"] });
     },
   });
 
@@ -170,7 +203,8 @@ export const useAdminBookings = ({ enabledUpcoming, enabledHistory }) => {
     onSuccess: () => {
       toast.success("Cancellation approved!");
 
-      queryClient.invalidateQueries(["getAllBookingsAndHoldings"]);
+      queryClient.invalidateQueries({ queryKey: ["getAllBookingsAndHoldings"] });
+      queryClient.invalidateQueries({ queryKey: ["getAllExpiredBookingsAndHoldings"] });
     },
   });
 
@@ -186,7 +220,8 @@ export const useAdminBookings = ({ enabledUpcoming, enabledHistory }) => {
     onSuccess: () => {
       toast.success("Cancellation rejected!");
 
-      queryClient.invalidateQueries(["getAllBookingsAndHoldings"]);
+      queryClient.invalidateQueries({ queryKey: ["getAllBookingsAndHoldings"] });
+      queryClient.invalidateQueries({ queryKey: ["getAllExpiredBookingsAndHoldings"] });
     },
   });
 

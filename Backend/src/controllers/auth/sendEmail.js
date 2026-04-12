@@ -1,7 +1,8 @@
 import { getResendClient } from "../../services/emailService.js";
+import { TEXT } from "../../constants/site.js";
 
-const FROM_EMAIL = "SRK Luxe <noreply@srkluxeresortsudumalpet.com>";
-const REPLY_TO_EMAIL = "srk.luxe.resort@gmail.com";
+const FROM_EMAIL = TEXT.MAIL.FROM_EMAIL;
+const REPLY_TO_EMAIL = TEXT.MAIL.REPLY_TO_EMAIL;
 
 const buildEmailOptions = (to, subject, html) => ({
   from: FROM_EMAIL,
@@ -39,7 +40,7 @@ export const signUpEmailSendor = async (email, verificationLink) => {
       </head>
       <body style="font-family: Arial, sans-serif; background-color: #000; color: #fff; padding: 20px;">
         <div style="max-width: 600px; margin: auto; background-color: #111; border-radius: 8px; padding: 20px; border: 1px solid #333;">
-          <h2 style="text-align: center; color: #0073e6;">Welcome to SRK Luxe Resorts</h2>
+          <h2 style="text-align: center; color: #0073e6;">Welcome to ${TEXT.SITE.TITLE}</h2>
           <p>Dear User,</p>
           <p>Please verify your email address by clicking the button below:</p>
 
@@ -53,7 +54,7 @@ export const signUpEmailSendor = async (email, verificationLink) => {
           <p>If you didn’t create an account, please ignore this email.</p>
           <hr style="border-color: #333;" />
           <p style="font-size: 12px; color: #999; text-align: center;">
-            © 2025 SRK Luxe Resorts. All rights reserved.
+            © 2025 ${TEXT.SITE.TITLE}. All rights reserved.
           </p>
         </div>
       </body>
@@ -95,7 +96,7 @@ export const resetPasswordEmailSender = async (email, resetLink) => {
 
           <hr style="border-color:#333"/>
           <p style="font-size:12px;color:#999;text-align:center">
-            © 2025 SRK Luxe Resorts
+            © 2025 ${TEXT.SITE.TITLE}
           </p>
         </div>
       </body>
@@ -122,7 +123,7 @@ export const sendBookingConfirmationEmail = async (booking) => {
         <div style="font-family: Arial, sans-serif; background:#000; color:#fff; padding:20px; max-width:600px; margin:auto; border-radius:8px; border:1px solid #333;">
           <h2 style="text-align:center; color:#0073e6;">Booking Confirmed!</h2>
           <p>Dear ${booking.guest.name},</p>
-          <p>Thank you for booking with SRK Luxe Resorts. Here are your booking details:</p>
+          <p>Thank you for booking with ${TEXT.SITE.TITLE}. Here are your booking details:</p>
           <ul>
             <li><strong>Booking ID:</strong> ${booking.bookingId}</li>
             <li><strong>Room:</strong> ${booking.roomId.name}</li>
@@ -141,14 +142,14 @@ export const sendBookingConfirmationEmail = async (booking) => {
           <p>We look forward to hosting you!</p>
           <hr style="border-color:#333" />
           <p style="font-size:12px; color:#999; text-align:center;">
-            © 2025 SRK Luxe Resorts. All rights reserved.
+            © 2025 ${TEXT.SITE.TITLE}. All rights reserved.
           </p>
         </div>
       `;
 
     return await sendEmail({
       to: booking.guest.email,
-      subject: "Your Booking is Confirmed at SRK Luxe Resorts",
+      subject: `Your Booking is Confirmed at ${TEXT.SITE.TITLE}`,
       html,
       logLabel: "booking confirmation email",
     });
@@ -169,7 +170,7 @@ export const sendReviewMail = async (booking) => {
         <div style="max-width:600px;margin:auto;background:#111;padding:20px;border-radius:8px">
           <h2 style="color:#0073e6;text-align:center">We’d love your feedback</h2>
           <p>Dear ${booking.guest.name},</p>
-          <p>Thank you for staying at <strong>SRK Luxe Resorts</strong>.</p>
+          <p>Thank you for staying at <strong>${TEXT.SITE.TITLE}</strong>.</p>
           <p>Please take a moment to share your experience.</p>
 
           <p style="text-align:center">
@@ -181,7 +182,7 @@ export const sendReviewMail = async (booking) => {
           </p>
 
           <p style="font-size:12px;color:#999;text-align:center">
-            © 2025 SRK Luxe Resorts
+            © 2025 ${TEXT.SITE.TITLE}
           </p>
         </div>
       </div>
@@ -189,7 +190,7 @@ export const sendReviewMail = async (booking) => {
 
     return await sendEmail({
       to: booking.guest.email,
-      subject: "How was your stay at SRK Luxe Resorts?",
+      subject: `How was your stay at ${TEXT.SITE.TITLE}?`,
       html,
       logLabel: "review email",
     });

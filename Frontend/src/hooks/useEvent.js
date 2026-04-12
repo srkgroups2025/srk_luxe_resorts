@@ -20,7 +20,7 @@ const useEvent = () => {
       toast.success(data.message);
     },
     onError: (error) => {
-      toast.error(error?.message);
+      toast.error(error.response.data.message || "Failed to create event");
     },  
   });
 
@@ -50,7 +50,7 @@ const useEvent = () => {
       toast.success(data.message);
     },
     onError: (error) => {
-      toast.error(error?.message);
+      toast.error(error.response.data.message || "Failed to update event");
     },  
   });
 

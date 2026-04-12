@@ -253,7 +253,7 @@ export default function ProfilePage() {
             <div className="mt-10 flex flex-col justify-center items-center sm:flex-row gap-4">
               <button
                 onClick={() => router.push("/reviews?email=" + user.email)}
-                className="max-w-[200px] flex-1 bg-buttons text-white py-2 px-4 rounded-xl hover:opacity-90 transition"
+                className="max-w-[200px]  cursor-pointer flex-1 bg-buttons text-white py-2 px-4 rounded-xl hover:opacity-90 transition"
               >
                 Review
               </button>
@@ -279,7 +279,7 @@ export default function ProfilePage() {
                 {/* Download Button */}
                 <button
                   onClick={downloadQR}
-                  className="max-w-[200px] bg-buttons text-white py-2 px-4 rounded-xl hover:opacity-90 transition"
+                  className="max-w-[200px]  cursor-pointer bg-buttons text-white py-2 px-4 rounded-xl hover:opacity-90 transition"
                 >
                   Download Review QR
                 </button>
@@ -341,7 +341,7 @@ export default function ProfilePage() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleSubmit}
-                    className="flex-1 bg-buttons text-white py-2 rounded-xl hover:opacity-90 transition"
+                    className="flex-1 bg-buttons  cursor-pointer text-white py-2 rounded-xl hover:opacity-90 transition"
                   >
                     Save
                   </motion.button>
@@ -349,7 +349,7 @@ export default function ProfilePage() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setEditing(false)}
-                    className="flex-1 border border-buttons text-buttons py-2 rounded-xl hover:bg-buttons hover:text-white transition"
+                    className="flex-1 border border-buttons  cursor-pointer text-buttons py-2 rounded-xl hover:bg-buttons hover:text-white transition"
                   >
                     Cancel
                   </motion.button>
@@ -413,7 +413,7 @@ export default function ProfilePage() {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => openCancelModal(booking)}
-                          className="px-4 py-2 rounded-lg bg-red text-white hover:opacity-90 transition"
+                          className="px-4 py-2 rounded-lg cursor-pointer bg-red text-white hover:opacity-90 transition"
                         >
                           Request Cancel
                         </motion.button>
@@ -500,7 +500,7 @@ export default function ProfilePage() {
                   whileTap={{ scale: 0.98 }}
                   onClick={handleSendCancelRequest}
                   disabled={isSendingCancelRequest}
-                  className={`flex-1 text-white py-2 rounded-lg transition ${
+                  className={`flex-1 text-white py-2 cursor-pointer rounded-lg transition ${
                     isSendingCancelRequest
                       ? "bg-red/70 cursor-not-allowed"
                       : "bg-red hover:opacity-90"
@@ -513,7 +513,7 @@ export default function ProfilePage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setCancelModalOpen(false)}
-                  className="flex-1 border py-2 rounded-lg"
+                  className="flex-1 cursor-pointer border py-2 rounded-lg"
                 >
                   Close
                 </motion.button>

@@ -20,7 +20,7 @@ const useRoom = () => {
       toast.success(data.message);
     },
     onError: (error) => {
-      toast.error(error?.message);
+            toast.error(error.response.data.message || "Failed to create room");
     },  
   });
 
@@ -50,7 +50,7 @@ const useRoom = () => {
       toast.success(data.message);
     },
     onError: (error) => {
-      toast.error(error?.message);
+      toast.error(error.response.data.message || "Failed to update room");
     },  
   });
 

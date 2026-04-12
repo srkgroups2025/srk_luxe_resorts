@@ -13,6 +13,7 @@ import WhatsappButton from "@/components/WhatsappButton";
 import Loader from "@/components/Loader";
 import Reviews from "@/components/Reviews";
 import useBG from "@/hooks/useBG";
+import { TEXT } from "@/constants/site";
 
 const FALLBACK_BACKGROUND = "/bg_img.jpeg";
 const SLIDE_INTERVAL = 4000;
@@ -69,7 +70,7 @@ export default function Home() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative h-[90vh] overflow-hidden sm:h-screen">
+      <section className="relative z-20 h-[90vh] overflow-visible sm:h-screen">
         <AnimatePresence initial={false} mode="sync">
           <motion.div
             key={backgroundImages[activeBackgroundIndex] ?? FALLBACK_BACKGROUND}
@@ -90,7 +91,7 @@ export default function Home() {
 
         <div className="relative z-10 flex flex-col justify-center items-center h-full text-center px-4 sm:px-6 md:px-12 lg:px-20">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primaryLite max-w-full sm:max-w-xl md:max-w-3xl leading-snug">
-            A luxurious escape for peaceful stays and grand celebrations, crafted to create timeless memories
+            {TEXT.SITE.QUOTES}
           </h2>
 
           <CheckAvailablity />

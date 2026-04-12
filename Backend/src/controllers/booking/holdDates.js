@@ -9,12 +9,30 @@ export const holdDates = async (req, res) => {
   session.startTransaction();
 
   try {
-    const { roomId, checkIn, checkOut, guests } = req.body;
+    const {
+      roomId,
+      checkIn,
+      checkOut,
+      bookingDates = [],
+      guests,
+      guest,
+      name,
+      mobile,
+    } = req.body;
 
     const room = await Room.findById(roomId).session(session);
     if (!room) throw new Error("Room not found");
 
-    const selectedDates = getDatesBetween(checkIn, checkOut);
+    const selectedDates = Array.isArray(bookingDates) && bookingDates.length > 0
+      ? bookingDates
+      : getDatesBetween(checkIn, checkOut);
+
+    const guestName = guest?.name || name || "";
+    const guestMobile = guest?.mobile || mobile || "";
+
+    if (!guestName.trim() || !guestMobile.trim()) {
+      throw new Error("Customer name and mobile number are required");
+    }
 
     const unavailableDates = new Set([
       ...room.bookedDates,
@@ -36,9 +54,14 @@ export const holdDates = async (req, res) => {
       [{
         bookingId: holdingId, // ✅ STRING now
         roomId,
+        guest: {
+          name: guestName.trim(),
+          mobile: guestMobile.trim(),
+        },
         guests,
         checkIn,
         checkOut,
+        nights: selectedDates.length,
         status: "HOLD",
       }],
       { session }

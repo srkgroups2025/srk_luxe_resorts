@@ -1,5 +1,5 @@
-// src/components/Details.js
 import React from "react";
+import { TEXT } from "@/constants/site";
 
 const Details = () => {
     return (
@@ -12,13 +12,13 @@ const Details = () => {
                 A lush green piece of land and serene surroundings which make you want to talk to the blooms, play hide and seek with the butterflies, hear an occasional "moo" of the cow, the beautiful doves, quacking ducks, and the busy honeybees — how close can you get to nature?
             </p>
             <p className="text-base sm:text-lg leading-relaxed">
-                Nestled in the calm beauty of Marulpatti, <span className="font-bold text-primaryLite">SRK Luxe Resort</span> offers a perfect blend of nature, luxury, and unforgettable celebrations.
+                Nestled in the calm beauty of Marulpatti, <span className="font-bold text-primaryLite">{TEXT.SITE.TITLE}</span> offers a perfect blend of nature, luxury, and unforgettable celebrations.
             </p>
             <p className="text-base sm:text-lg leading-relaxed">
-                Designed with passion by <span className="font-bold text-primaryLite">K.P. Ravindranath</span>, our resort is the finest destination for premium stays and events.
+                Designed with passion by <span className="font-bold text-primaryLite">{TEXT.DETAILS.OWNER}</span>, our resort is the finest destination for premium stays and events.
             </p>
             <p className="text-center sm:text-lg leading-relaxed">
-                A unit of <span className="font-bold text-primaryLite">SRK Homestead</span>
+                A unit of <span className="font-bold text-primaryLite">{TEXT.DETAILS.DETAIL_ONE}</span>
             </p>
         </div>
     );

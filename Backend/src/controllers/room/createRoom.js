@@ -15,7 +15,7 @@ export const createRoom = async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!name || !price || !gst || !maxGuest || !description) {
+    if (!name || !price || !gst || !maxGuest || !description || !amenities) {
       return res.status(400).json({ message: "Please provide all required fields." });
     }
 
