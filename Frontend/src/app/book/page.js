@@ -1,29 +1,77 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Icon } from "@iconify/react";
 import useRoom from "../../hooks/useRoom";
 import { useBooking } from "@/app/context/BookingContext";
 import { getDatesBetween } from "../../utils/getDatesBetween";
 import AutoImageSlider from "@/components/AutoImageSlider";
 
-// Skeleton Loader Component
 const RoomCardSkeleton = () => (
-  <motion.div
-    animate={{ opacity: [0.5, 1, 0.5] }}
-    transition={{ duration: 2, repeat: Infinity }}
-    className="border bg-white rounded-2xl shadow overflow-hidden"
-  >
-    <div className="h-56 w-full bg-gray-200 rounded-t-2xl" />
-    <div className="p-6 space-y-3">
-      <div className="h-6 bg-gray-200 rounded w-3/4" />
-      <div className="h-4 bg-gray-200 rounded w-1/2" />
-      <div className="h-4 bg-gray-200 rounded w-full" />
-      <div className="h-10 bg-gray-200 rounded-xl" />
+  <div className="overflow-hidden rounded-2xl border bg-white shadow">
+    <div className="h-56 w-full animate-pulse bg-gray-200" />
+    <div className="space-y-3 p-6">
+      <div className="h-6 w-3/4 rounded bg-gray-200" />
+      <div className="h-4 w-1/2 rounded bg-gray-200" />
+      <div className="h-4 w-full rounded bg-gray-200" />
+      <div className="h-10 rounded-xl bg-gray-200" />
     </div>
-  </motion.div>
+  </div>
 );
+
+function CheckIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="h-4 w-4"
+    >
+      <path
+        fillRule="evenodd"
+        d="M16.704 5.296a1 1 0 0 1 0 1.408l-7.2 7.2a1 1 0 0 1-1.408 0l-3.6-3.6a1 1 0 1 1 1.408-1.408l2.896 2.896 6.496-6.496a1 1 0 0 1 1.408 0Z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="h-4 w-4"
+    >
+      <path
+        fillRule="evenodd"
+        d="M4.293 4.293a1 1 0 0 1 1.414 0L10 8.586l4.293-4.293a1 1 0 1 1 1.414 1.414L11.414 10l4.293 4.293a1 1 0 0 1-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L8.586 10 4.293 5.707a1 1 0 0 1 0-1.414Z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+function EyeIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="h-5 w-5"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M2.25 12s3.75-7.5 9.75-7.5S21.75 12 21.75 12s-3.75 7.5-9.75 7.5S2.25 12 2.25 12Z"
+      />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
 
 export default function BookPage() {
   const router = useRouter();
@@ -39,11 +87,11 @@ export default function BookPage() {
     : [];
 
   const formatDayWithMonth = (dateStr) => {
-  const date = new Date(dateStr);
-  const day = date.getDate();
-  const month = date.toLocaleString("default", { month: "short" }); // "Jan", "Feb", etc.
-  return `${day} ${month}`;
-};
+    const date = new Date(dateStr);
+    const day = date.getDate();
+    const month = date.toLocaleString("default", { month: "short" });
+    return `${day} ${month}`;
+  };
 
   const handleViewDetails = (roomId) => {
     if (viewingRoomId) return;
@@ -55,116 +103,75 @@ export default function BookPage() {
   };
 
   return (
-    <div
-      className="min-h-screen p-6 md:p-10"
-    >
-      <motion.h2
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-3xl font-bold mb-10 text-center"
-      >
-        Choose Your Room
-      </motion.h2>
+    <div className="min-h-screen p-6 md:p-10">
+      <h2 className="mb-10 text-center text-3xl font-bold">Choose Your Room</h2>
 
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+      <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
         {rooms.length === 0 ? (
-          // Loading skeleton cards
           <>
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <RoomCardSkeleton key={i} />
             ))}
           </>
         ) : (
-          rooms.map((room, index) => {
-            const booked = [
-              ...(room.bookedDates || []),
-              ...(room.holdDates || []),
-            ];
+          rooms.map((room) => {
+            const booked = [...(room.bookedDates || []), ...(room.holdDates || [])];
 
-            const availableDates = selectedDates.filter(
-              (date) => !booked.includes(date)
-            );
+            const availableDates = selectedDates.filter((date) => !booked.includes(date));
 
             const allAvailable =
-              availableDates.length === selectedDates.length &&
-              selectedDates.length > 0;
+              availableDates.length === selectedDates.length && selectedDates.length > 0;
 
             const noneAvailable = availableDates.length === 0;
+
             return (
-              <motion.div
+              <div
                 key={room.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                whileHover={{ y: -8, boxShadow: "0 12px 24px rgba(0,0,0,0.15)" }}
-                className="border bg-white rounded-2xl shadow overflow-hidden"
+                className="overflow-hidden rounded-2xl border bg-white shadow"
               >
-                <motion.div
-                  className="overflow-hidden"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <AutoImageSlider
-                    images={room.images}
-                    alt={room.name}
-                    className="h-56 w-full object-cover"
-                  />
-                </motion.div>
+                <AutoImageSlider
+                  images={room.images}
+                  alt={room.name}
+                  className="h-56 w-full object-cover"
+                />
 
                 <div className="p-6">
                   <h3 className="text-xl font-semibold">{room.name}</h3>
-                  <p className="text-grayDark mb-2">
-                    ₹ {room.price} / night
-                  </p>
+                  <p className="mb-2 text-grayDark">INR {room.price} / night</p>
 
-                  {/* Availability Status */}
-                  {noneAvailable ? (
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center gap-2 text-red-600 text-sm mb-3"
-                    >
-                      <Icon icon="mdi:close-circle" width="16" height="16" />
+                  {selectedDates.length === 0 ? (
+                    <p className="mb-3 text-sm text-yellow-600">
+                      Please select Dates
+                    </p>
+                  ) : noneAvailable ? (
+                    <div className="mb-3 flex items-center gap-2 text-sm text-red-600">
+                      <CloseIcon />
                       Not Available
-                    </motion.div>
+                    </div>
                   ) : allAvailable ? (
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center gap-2 text-green-600 text-sm mb-3"
-                    >
-                      <Icon icon="mdi:check-circle" width="16" height="16" />
+                    <div className="mb-3 flex items-center gap-2 text-sm text-green-600">
+                      <CheckIcon />
                       Available
-                    </motion.div>
+                    </div>
                   ) : (
-                    <motion.p
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="text-green-600 text-sm mb-3"
-                    >
-                      Available dates:{" "}
-                      {availableDates
-                        .map(formatDayWithMonth)
-                        .join(", ")}
-                    </motion.p>
+                    <p className="mb-3 text-sm text-green-600">
+                      Available dates: {availableDates.map(formatDayWithMonth).join(", ")}
+                    </p>
                   )}
 
-                  <motion.button
+                  <button
                     onClick={() => handleViewDetails(room.id)}
                     disabled={noneAvailable || viewingRoomId === room.id}
-                    whileHover={!noneAvailable && viewingRoomId !== room.id ? { scale: 1.02 } : {}}
-                    whileTap={!noneAvailable && viewingRoomId !== room.id ? { scale: 0.98 } : {}}
-                    className={`w-full py-2 rounded-xl text-white flex items-center justify-center gap-2 ${noneAvailable
-                      || viewingRoomId === room.id
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : " cursor-pointer bg-primaryLite hover:opacity-90"
+                    className={`flex w-full items-center justify-center gap-2 rounded-xl py-2 text-white transition-transform duration-200 ${noneAvailable || viewingRoomId === room.id
+                        ? "cursor-not-allowed bg-gray-400"
+                        : "cursor-pointer bg-primaryLite hover:scale-[1.02] hover:opacity-90"
                       }`}
                   >
-                    <Icon icon="mdi:eye" width="18" height="18" />
+                    <EyeIcon />
                     {viewingRoomId === room.id ? "Viewing..." : "View Details"}
-                  </motion.button>
+                  </button>
                 </div>
-              </motion.div>
+              </div>
             );
           })
         )}

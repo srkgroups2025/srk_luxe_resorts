@@ -1,24 +1,71 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import Joi from "joi";
 import User from "../../models/User.js";
 import { signUpEmailSendor } from "./sendEmail.js";
 
+const BCRYPT_SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS || "10");
+
+// ✅ Input Validation Schema
+const signupSchema = Joi.object({
+  name: Joi.string()
+    .trim()
+    .min(2)
+    .max(50)
+    .required()
+    .messages({
+      "string.empty": "Name is required",
+      "string.min": "Name must be at least 2 characters",
+      "string.max": "Name cannot exceed 50 characters",
+    }),
+  email: Joi.string()
+    .email()
+    .lowercase()
+    .trim()
+    .required()
+    .messages({
+      "string.email": "Please provide a valid email address",
+      "string.empty": "Email is required",
+    }),
+  mobileNumber: Joi.string()
+    .pattern(/^[0-9]{10}$/)
+    .required()
+    .messages({
+      "string.pattern.base": "Mobile number must be 10 digits",
+      "string.empty": "Mobile number is required",
+    }),
+  password: Joi.string()
+    .min(8)
+    .pattern(/[A-Z]/)
+    .pattern(/[a-z]/)
+    .pattern(/[0-9]/)
+    .required()
+    .messages({
+      "string.min": "Password must be at least 8 characters",
+      "string.pattern.base":
+        "Password must contain uppercase, lowercase, and numbers",
+      "string.empty": "Password is required",
+    }),
+  isMobileNumberVerified: Joi.boolean().default(false),
+});
+
 export const signup = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      mobileNumber,
-      password,
-      isMobileNumberVerified = false,
-    } = req.body;
+    // ✅ Validate input with Joi
+    const { error, value } = signupSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
 
-    /* ---------------- VALIDATION ---------------- */
-    if (!name || !email || !mobileNumber || !password) {
+    if (error) {
+      const messages = error.details.map((detail) => detail.message);
       return res.status(400).json({
-        message: "All fields are required",
+        message: "Validation error",
+        errors: messages,
       });
     }
+
+    const { name, email, mobileNumber, password, isMobileNumberVerified } = value;
 
     /* ---------------- EMAIL CHECK ---------------- */
     const existingEmailUser = await User.findOne({ email });
@@ -61,17 +108,17 @@ export const signup = async (req, res) => {
       });
     }
 
-    /* ---------------- HASH PASSWORD ---------------- */
-    const hashedPassword = await bcrypt.hash(password, 10);
+    /* ✅ HASH PASSWORD WITH CONFIGURED SALT ROUNDS */
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
-    /* ---------------- EMAIL TOKEN ---------------- */
+    /* ✅ EMAIL TOKEN */
     const verifyToken = crypto.randomBytes(32).toString("hex");
     const hashedVerifyToken = crypto
       .createHash("sha256")
       .update(verifyToken)
       .digest("hex");
 
-    /* ---------------- CREATE USER ---------------- */
+    /* ✅ CREATE USER */
     const user = await User.create({
       name,
       email,
@@ -80,15 +127,14 @@ export const signup = async (req, res) => {
       isMobileNumberVerified,
       totalBookings: 0,
       emailVerificationToken: hashedVerifyToken,
-      emailVerificationExpire:
-        Date.now() + 24 * 60 * 60 * 1000,
+      emailVerificationExpire: Date.now() + 24 * 60 * 60 * 1000,
     });
 
-    /* ---------------- SEND EMAIL ---------------- */
+    /* ✅ SEND EMAIL */
     const verificationLink = `${process.env.FRONTEND_URL}/verify-email/${verifyToken}`;
     await signUpEmailSendor(user.email, verificationLink);
 
-    /* ---------------- SAFE RESPONSE ---------------- */
+    /* ✅ SAFE RESPONSE - DO NOT SEND SENSITIVE DATA */
     res.status(201).json({
       message: "Signup successful. Please verify your email.",
       user: {
@@ -104,7 +150,7 @@ export const signup = async (req, res) => {
   } catch (error) {
     console.error("Signup Error:", error);
     res.status(500).json({
-      message: "Server error during signup",
+      message: "An error occurred during signup",
     });
   }
 };

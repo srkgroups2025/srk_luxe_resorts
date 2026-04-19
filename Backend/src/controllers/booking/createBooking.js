@@ -4,6 +4,7 @@ import Booking from "../../models/Booking.js";
 import { getDatesBetween } from "./getDatesBetween.js";
 import { generateBookingId } from "../../jobs/generateId.js";
 import { sendBookingConfirmationEmail } from "../auth/sendEmail.js";
+import { confirmBookingService } from "../../services/booking.service.js";
 
 /**
  * Normalize date for safe comparison
@@ -55,6 +56,7 @@ export const createPendingBooking = async (req, res) => {
       gst,
       totalAmount,
       status: "PENDING_PAYMENT",
+      paymentStatus: "PENDING",
     });
 
     room.holdDates.push(...bookingDates);
@@ -71,44 +73,13 @@ export const createPendingBooking = async (req, res) => {
  * CONFIRM BOOKING (TRANSACTION SAFE)
  */
 export const confirmBooking = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { bookingId, guest } = req.body;
 
-    const booking = await Booking.findOne({ bookingId }).session(session);
-    if (!booking) throw new Error("Booking not found");
-
-    if (booking.status !== "PENDING_PAYMENT") {
-      throw new Error("Invalid booking state");
-    }
-
-    booking.status = "BOOKED";
-    booking.guest = guest;
-    await booking.save({ session });
-
-    const room = await Room.findById(booking.roomId).session(session);
-
-    const dates = getDatesBetween(booking.checkIn, booking.checkOut);
-    room.bookedDates.push(...dates);
-    room.holdDates = room.holdDates.filter(
-      d => !dates.map(normalize).includes(normalize(d))
-    );
-
-    await room.save({ session });
-
-    await session.commitTransaction();
-    session.endSession();
-
-    await booking.populate("roomId");
-    await sendBookingConfirmationEmail(booking);
+    await confirmBookingService(bookingId, guest);
 
     res.json({ message: "Booking confirmed" });
   } catch (err) {
-    await session.abortTransaction();
-    session.endSession();
-
     res.status(400).json({ message: err.message });
   }
 };

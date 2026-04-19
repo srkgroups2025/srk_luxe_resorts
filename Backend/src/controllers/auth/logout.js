@@ -2,10 +2,10 @@
 const logout = (req, res) => {
     try {
         // Clear the auth_token cookie
-        res.clearCookie("auth_token", {
+        res.clearCookie("accessToken", {
             httpOnly: true,                        // Prevents client-side JS from accessing the cookie
-            secure: process.env.NODE_ENV !== "development", // Only send cookie over HTTPS in production
-            sameSite: "strict",                     // Helps prevent CSRF attacks
+            secure: process.env.NODE_ENV === "production", // HTTPS only in production
+            sameSite: "lax",                        // Allow credentials with cross-origin requests
         });
 
         // Send success response

@@ -1,5 +1,6 @@
 import { getResendClient } from "../../services/emailService.js";
 import { TEXT } from "../../constants/site.js";
+import Room from "../../models/Room.js";
 
 const FROM_EMAIL = TEXT.MAIL.FROM_EMAIL;
 const REPLY_TO_EMAIL = TEXT.MAIL.REPLY_TO_EMAIL;
@@ -119,6 +120,10 @@ export const sendBookingConfirmationEmail = async (booking) => {
   try {
     const profileUrl = `${process.env.FRONTEND_URL}/profile`;
 
+    // Fetch room details to get the room name
+    const room = await Room.findById(booking.roomId);
+    const roomName = room ? room.name : "Room";
+
     const html = `
         <div style="font-family: Arial, sans-serif; background:#000; color:#fff; padding:20px; max-width:600px; margin:auto; border-radius:8px; border:1px solid #333;">
           <h2 style="text-align:center; color:#0073e6;">Booking Confirmed!</h2>
@@ -126,7 +131,7 @@ export const sendBookingConfirmationEmail = async (booking) => {
           <p>Thank you for booking with ${TEXT.SITE.TITLE}. Here are your booking details:</p>
           <ul>
             <li><strong>Booking ID:</strong> ${booking.bookingId}</li>
-            <li><strong>Room:</strong> ${booking.roomId.name}</li>
+            <li><strong>Room:</strong> ${roomName}</li>
             <li><strong>Check-In:</strong> ${new Date(booking.checkIn).toLocaleDateString()}</li>
             <li><strong>Check-Out:</strong> ${new Date(booking.checkOut).toLocaleDateString()}</li>
             <li><strong>Guests:</strong> ${booking.guests.adults} Adults${booking.guests.children > 0 ? `, ${booking.guests.children} Children` : ''}</li>

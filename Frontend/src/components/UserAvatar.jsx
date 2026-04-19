@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import Image from "next/image";
 
 function getInitials(name, letters = 2) {
   const trimmed = (name || "").trim();
@@ -24,7 +24,6 @@ export default function UserAvatar({
   className = "",
   imgClassName = "",
   fallbackClassName = "",
-  motionProps = {},
 }) {
   const [imgError, setImgError] = useState(false);
   const initials = useMemo(() => getInitials(name, 2), [name]);
@@ -32,24 +31,26 @@ export default function UserAvatar({
 
   if (showImage) {
     return (
-      <motion.img
-        {...motionProps}
-        src={src}
-        alt={alt}
-        onError={() => setImgError(true)}
-        className={`${className} ${imgClassName}`}
-      />
+      <div className={`${className} overflow-hidden`}>
+        <Image
+          src={src}
+          alt={alt}
+          width={48}
+          height={48}
+          onError={() => setImgError(true)}
+          className={`${imgClassName} h-full w-full`}
+        />
+      </div>
     );
   }
 
   return (
-    <motion.div
-      {...motionProps}
+    <div
       aria-label={alt}
       title={name || alt}
-      className={`${className} ${fallbackClassName} flex items-center justify-center select-none leading-none`}
+      className={`${className} ${fallbackClassName} flex select-none items-center justify-center leading-none`}
     >
       {initials}
-    </motion.div>
+    </div>
   );
 }

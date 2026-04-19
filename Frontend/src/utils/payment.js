@@ -42,6 +42,12 @@ export const processPayment = async ({
                         razorpayPaymentId: response.razorpay_payment_id,
                         razorpayOrderId: response.razorpay_order_id,
                         razorpaySignature: response.razorpay_signature,
+                        // 🔥 Pass guest details from userInfo
+                        guest: {
+                            name: userInfo?.name || "",
+                            email: userInfo?.email || "",
+                            mobile: userInfo?.mobileNumber || "",
+                        },
                     }
                 );
 

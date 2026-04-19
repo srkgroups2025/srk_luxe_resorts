@@ -1,19 +1,45 @@
 import crypto from "crypto";
+import Joi from "joi";
 import User from "../../models/User.js";
 import { resetPasswordEmailSender } from "./sendEmail.js";
 
+// ✅ Input validation schema
+const forgotPasswordSchema = Joi.object({
+  email: Joi.string()
+    .email()
+    .lowercase()
+    .trim()
+    .required()
+    .messages({
+      "string.email": "Please provide a valid email address",
+      "string.empty": "Email is required",
+    }),
+});
+
 export const forgotPassword = async (req, res) => {
   try {
-    const { email } = req.body;
+    // ✅ Validate input
+    const { error, value } = forgotPasswordSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
 
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
+    if (error) {
+      const messages = error.details.map((detail) => detail.message);
+      return res.status(400).json({
+        message: "Validation error",
+        errors: messages,
+      });
     }
 
+    const { email } = value;
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      // ✅ Don't reveal if email exists (security best practice)
+      return res.status(200).json({
+        message: "If email exists, password reset link will be sent",
+      });
     }
 
     // Generate raw token
@@ -33,11 +59,12 @@ export const forgotPassword = async (req, res) => {
 
     await resetPasswordEmailSender(user.email, resetLink);
 
+    // ✅ Don't reveal if email was actually sent (security best practice)
     res.json({
-      message: "Password reset email sent successfully",
+      message: "Password reset link will be sent through email ",
     });
   } catch (error) {
     console.error("Forgot Password Error:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "An error occurred" });
   }
 };

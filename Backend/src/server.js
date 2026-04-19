@@ -1,8 +1,11 @@
 import "dotenv/config";
 import express from "express";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import hpp from "hpp";
 
 import { connectDB } from "./config/db.js";
+import { loginLimiter, forgotPasswordLimiter, signupLimiter, generalLimiter } from "./middlewares/rateLimiters.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import roomRoutes from "./routes/room.routes.js";
@@ -22,6 +25,10 @@ connectDB();
 
 const app = express();
 
+/* 🔒 Security Middleware */
+app.use(helmet()); // Set security headers
+app.use(hpp()); // Prevent parameter pollution
+
 /* 🌐 Allowed Origins */
 const allowedOrigins = [
   "http://localhost:3000",
@@ -30,23 +37,22 @@ const allowedOrigins = [
   "https://srkluxeresortsudumalpet.com"
 ];
 
-/* 🌐 Custom CORS Middleware (More Reliable in Production) */
+/* 🌐 CORS Configuration */
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, Cookie"
+    );
   }
-
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization"
-  );
 
   // Handle preflight requests
   if (req.method === "OPTIONS") {
@@ -56,11 +62,12 @@ app.use((req, res, next) => {
   next();
 });
 
-/* 🧠 Middlewares */
-app.use(express.json());
+/* 🧠 Body Parsing Middleware */
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser());
 
-/* 🚏 Routes */
+/* � Routes */
 app.use("/api/auth", authRoutes);
 app.use("/api/rooms", roomRoutes); // ✅ removed duplicate
 app.use("/api/amenities", amenitiesRoutes);
@@ -80,24 +87,47 @@ app.get("/", (req, res) => {
   });
 });
 
-/* ❗ Global Error Handler (ensures CORS headers on errors) */
+/* ❗ Global Error Handler */
 app.use((err, req, res, next) => {
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
   }
 
-  res.setHeader("Access-Control-Allow-Credentials", "true");
+  // Log full error server-side (never send to client)
+  console.error("ERROR:", {
+    message: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method,
+  });
 
-  res.status(500).json({
+  // Send generic error to client
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
     success: false,
-    message: err.message || "Internal Server Error",
+    message:
+      statusCode === 500
+        ? "An error occurred. Please try again later."
+        : err.message || "Internal Server Error",
+  });
+});
+
+/* 404 Handler */
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
   });
 });
 
 /* 🚀 Server */
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
+export { loginLimiter, forgotPasswordLimiter, signupLimiter, generalLimiter };

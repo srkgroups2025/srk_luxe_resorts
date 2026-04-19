@@ -1,0 +1,69 @@
+/* CRITICAL CSS - Inline in HTML <head> (Must be ~14KB or less) */
+/* Only styles needed for FCP (First Contentful Paint) */
+
+@import "tailwindcss";
+
+/* 🔑 VARIABLES - Required for rendering */
+:root {
+  /* 🎨 Colors - Used in initial layout */
+  --color-primaryLite: #C6A15B;
+  --color-secondaryLite: #E2C889;
+  --color-teritaryLite: #0E1B1A;
+  --color-bgColor: #F5F3EE;
+  --color-cards: #dfdad2;
+  --color-buttons: #ca5c30;
+  --color-dark: #0B0B0B;
+  --color-red: #f33210;
+  --color-white: #FFFFFF;
+  --color-grayLite: #E5E7EB;
+  --color-grayDark: #6B7280;
+  --color-green: #20ad04;
+
+  /* ✨ Fonts - Critical for text rendering */
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* 🔑 REGISTER WITH TAILWIND */
+@theme {
+  --color-primaryLite: var(--color-primaryLite);
+  --color-secondaryLite: var(--color-secondaryLite);
+  --color-teritaryLite: var(--color-teritaryLite);
+  --color-bgColor: var(--color-bgColor);
+  --color-cards: var(--color-cards);
+  --color-buttons: var(--color-buttons);
+  --color-dark: var(--color-dark);
+  --color-red: var(--color-red);
+  --color-white: var(--color-white);
+  --color-grayLite: var(--color-grayLite);
+  --color-grayDark: var(--color-grayDark);
+  --color-green: var(--color-green);
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+}
+
+/* CRITICAL HTML STRUCTURE STYLES */
+html,
+body {
+  scroll-behavior: smooth;
+  font-family: var(--font-body);
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+}
+
+/* Prevent layout shift during font loading */
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-body);
+  font-feature-settings: "kern" 1;
+}
+
+/* Prevent Cumulative Layout Shift (CLS) from images */
+img {
+  max-width: 100%;
+  height: auto;
+}

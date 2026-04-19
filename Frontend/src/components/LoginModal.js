@@ -205,13 +205,23 @@ export default function LoginModal({ close }) {
         setMode("login");
       }
     } catch (err) {
-      toast.error("Something went wrong", {
-        description: err.response?.data?.message || "Please try again",
-      });
+      const errors = err.response?.data?.errors;
+      const message = err.response?.data?.message;
+
+      if (errors && Array.isArray(errors)) {
+        // Remove duplicate errors
+        const uniqueErrors = [...new Set(errors)];
+
+        uniqueErrors.forEach((error) => {
+          toast.error(error);
+        });
+      } else {
+        toast.error(message || "Something went wrong");
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <motion.div
@@ -438,11 +448,10 @@ export default function LoginModal({ close }) {
             <motion.button
               disabled={loading}
               onClick={handleSubmit}
-              className={`w-full font-bold py-3.5 cursor-pointer rounded-xl mb-6 transition-all duration-300 shadow-lg text-white text-lg ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 shadow-xl"
-              }`}
+              className={`w-full font-bold py-3.5 cursor-pointer rounded-xl mb-6 transition-all duration-300 shadow-lg text-white text-lg ${loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 shadow-xl"
+                }`}
               whileHover={() => (!loading ? { scale: 1.02 } : {})}
               whileTap={() => (!loading ? { scale: 0.98 } : {})}
               transition={{ duration: 0.2, type: "spring", stiffness: 200 }}

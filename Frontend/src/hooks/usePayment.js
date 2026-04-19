@@ -6,11 +6,11 @@ import { toast } from "sonner";
 export const usePayment = () => {
 
     const createOrder = useMutation({
-        mutationFn: async ({ totalAmount, currency = "INR" }) => {
+        mutationFn: async ({bookingId, totalAmount, currency = "INR" }) => {
             const response = await axiosInstance({
                 url: ApiRoutes.payment.createOrder.path,
                 method: ApiRoutes.payment.createOrder.method,
-                data: { totalAmount, currency },
+                data: { bookingId, totalAmount, currency },
             });
             return response.data;
         },

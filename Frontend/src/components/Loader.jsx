@@ -8,14 +8,14 @@ export default function Loader() {
       <div className="flex flex-col items-center gap-6">
         {/* Logo */}
         <div className="relative">
-          <Image
-            src="/logo.jpeg"
-            alt={TEXT.SITE.TITLE}
-            width={120}
-            height={120}
-            priority
-            className="rounded-full object-cover border-2 border-primaryLite shadow-lg animate-fadeIn"
-          />
+        <Image
+          src="/logo.jpeg"
+          alt={TEXT.SITE.TITLE}
+          width={120}
+          height={120}
+          preload
+          className="rounded-full object-cover border-2 border-primaryLite shadow-lg animate-fadeIn"
+        />
 
           {/* Glow Ring */}
           <span className="absolute inset-0 rounded-full border border-primaryLite/40 animate-ping"></span>

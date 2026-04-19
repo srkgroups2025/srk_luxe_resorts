@@ -69,9 +69,9 @@ export default function Reviews() {
                 </p>
                 <StarRating rating={r.rating} />
               </div>
-              {/* <p className="text-xs text-gray-500 truncate">
+              <p className="text-xs mb-1 text-gray-500 truncate">
                 {r.email}
-              </p> */}
+              </p>
 
               <p className="text-sm text-gray-600 leading-relaxed line-clamp-4">
                 {r.comment}

@@ -1,31 +1,35 @@
-import Razorpay from "razorpay";
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID.trim(),
-  key_secret: process.env.RAZORPAY_KEY_SECRET.trim(),
-});
+import razorpay from "../../config/razorpay.js";
+import Booking from "../../models/Booking.js";
 
 export const createPaymentOrder = async (req, res) => {
   try {
-    const { totalAmount, currency = "INR" } = req.body;
+    const { totalAmount, currency = "INR", bookingId } = req.body;
 
-    if (!totalAmount) {
-      return res.status(400).json({ message: "Total amount is required" });
+    if (!totalAmount || !bookingId) {
+      return res.status(400).json({ message: "Amount & bookingId required" });
     }
 
     const options = {
       amount: Math.round(Number(totalAmount) * 100),
       currency,
       receipt: `receipt_${Date.now()}`,
+      notes: {
+        bookingId,
+      },
     };
 
     const order = await razorpay.orders.create(options);
+
+    await Booking.findOneAndUpdate(
+      { bookingId },
+      { razorpayOrderId: order.id }
+    );
 
     res.status(201).json({
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID, // 👈 SEND PUBLIC KEY
+      keyId: process.env.RAZORPAY_KEY_ID,
     });
   } catch (err) {
     console.error("RAZORPAY ERROR:", err);

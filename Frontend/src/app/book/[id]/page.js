@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import useRoom from "../../../hooks/useRoom";
 import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
@@ -51,6 +52,7 @@ export default function RoomDetailsPage() {
   const [openCalendar, setOpenCalendar] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerNumber, setCustomerNumber] = useState("");
+  const [isBookingProcessing, setIsBookingProcessing] = useState(false);
 
   // User Info
   const [userInfo, setUserInfo] = useState(null);
@@ -144,7 +146,7 @@ export default function RoomDetailsPage() {
     availableDates.length !== selectedDates.length;
 
   const isBookingDisabled =
-    isCancelLoading || isConfirmLoading || isCreateLoading || totalNights === 0 || exceedsGuestLimit || isDateInvalid;
+    isCancelLoading || isConfirmLoading || isCreateLoading || isBookingProcessing || totalNights === 0 || exceedsGuestLimit || isDateInvalid;
 
   /* ---------- PAYMENT HANDLER ---------- */
   const handlePayment = async () => {
@@ -156,6 +158,8 @@ export default function RoomDetailsPage() {
         toast.error("Please login to continue");
         return;
       }
+
+      setIsBookingProcessing(true);
 
       /* 1️⃣ CREATE PENDING BOOKING */
       const pendingRes = await createPendingBooking.mutateAsync({
@@ -178,6 +182,7 @@ export default function RoomDetailsPage() {
       /* 2️⃣ CREATE PAYMENT ORDER */
       const orderRes = await createOrder.mutateAsync({
         totalAmount,
+        bookingId,
       });
 
       const { orderId, amount, currency, keyId } = orderRes;
@@ -193,28 +198,26 @@ export default function RoomDetailsPage() {
 
         /* 4️⃣ PAYMENT SUCCESS → CONFIRM BOOKING */
         onSuccess: async () => {
-          await confirmBooking.mutateAsync({
-            bookingId,
-            guest: {
-              name: userInfo.name,
-              email: userInfo.email,
-              mobile: userInfo.mobileNumber,
-            },
-          });
-
-          toast.success("Booking confirmed 🎉");
-          router.push("/profile");
+          toast.success("Payment successful! Confirming booking...");
+          setTimeout(() => {
+            setIsBookingProcessing(false);
+            router.push("/profile");
+          }, 2000);
         },
 
         /* 5️⃣ PAYMENT FAILED → DELETE PENDING BOOKING */
         onFailure: async () => {
           await cancelPendingBooking.mutateAsync(bookingId);
           toast.error("Payment failed. Booking released.");
+          setTimeout(() => {
+            setIsBookingProcessing(false);
+          }, 1500);
         },
       });
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.message || "Something went wrong");
+      setIsBookingProcessing(false);
     }
   };
 
@@ -276,26 +279,37 @@ export default function RoomDetailsPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <img
-            src={activeImg}
-            alt={room.name}
-            className="w-full h-[400px] object-cover rounded-2xl mb-4"
-          />
+          <div className="relative w-full h-[400px] rounded-2xl mb-4 overflow-hidden">
+            <Image
+              src={activeImg}
+              alt={room.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              preload
+            />
+          </div>
 
           <div className="flex gap-3 overflow-x-auto">
             {room.images.map((img) => (
-              <motion.img
+              <motion.div
                 key={img}
-                src={img}
-                alt=""
                 onClick={() => setActiveImg(img)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`h-20 w-24 object-cover rounded-xl cursor-pointer border-2 ${activeImg === img
+                className={`relative h-20 w-24 overflow-hidden rounded-xl cursor-pointer border-2 ${activeImg === img
                   ? "border-primaryLite"
                   : "border-transparent"
                   }`}
-              />
+              >
+                <Image
+                  src={img}
+                  alt=""
+                  fill
+                  sizes="96px"
+                  className="object-cover"
+                />
+              </motion.div>
             ))}
           </div>
         </motion.div>
@@ -495,7 +509,7 @@ export default function RoomDetailsPage() {
                   : "bg-primaryLite cursor-pointer hover:opacity-90"
                   }`}
               >
-                {isCreateLoading || isConfirmLoading || isCancelLoading ? (
+                {isBookingProcessing ? (
                   <>
                     <LoadingSpinner />
                     Booking...

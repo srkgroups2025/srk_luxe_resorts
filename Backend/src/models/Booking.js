@@ -70,6 +70,21 @@ const bookingSchema = new mongoose.Schema(
       default: "PENDING_PAYMENT",
       index: true,
     },
+    paymentStatus: {
+      type: String,
+      enum: ["PENDING", "SUCCESS", "FAILED"],
+      default: "PENDING",
+      index: true,
+    },
+
+    razorpayOrderId: {
+      type: String,
+      index: true,
+    },
+
+    razorpayPaymentId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
@@ -82,7 +97,10 @@ bookingSchema.index(
   { createdAt: 1 },
   {
     expireAfterSeconds: 300, // 5 minutes
-    partialFilterExpression: { status: "PENDING_PAYMENT" },
+    partialFilterExpression: {
+      status: "PENDING_PAYMENT",
+      paymentStatus: "PENDING",
+    }
   }
 );
 

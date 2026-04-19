@@ -1,11 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { TEXT } from "@/constants/site";
 
 export default function Footer() {
-    const router = useRouter();
-
     const handleSectionScroll = (sectionId) => {
         const element = document.getElementById(sectionId);
         if (element) {
